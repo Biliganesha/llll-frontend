@@ -5,12 +5,12 @@ import { useState } from "react";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 
 /**
- * NotificationBar (Sample A) — swipe-down notification panel, ala HP.
- * Pull handle tepat di bawah StatusBar:
- *   - Swipe ke bawah → buka panel
+ * NotificationBar (Sample A) — swipe-down notification panel.
+ * Pull handle di bawah StatusBar:
+ *   - Swipe ke bawah → buka panel (threshold 28px / velocity 300)
  *   - Tap pill → buka panel (fallback)
- * Panel:
- *   - Swipe ke atas / tap backdrop / tombol close → tutup
+ * Handle snap balik ke posisi awal otomatis (dragSnapToOrigin).
+ * Panel: swipe up (threshold 60px / velocity 400), tap backdrop, atau tombol close.
  */
 export function NotificationBar() {
   const [open, setOpen] = useState(false);
