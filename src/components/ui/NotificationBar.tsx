@@ -23,6 +23,7 @@ export function NotificationBar() {
         dragConstraints={{ top: 0, bottom: 60 }}
         dragElastic={0.4}
         dragMomentum={false}
+        dragSnapToOrigin
         onDragEnd={(_, info: PanInfo) => {
           if (info.offset.y > 28 || info.velocity.y > 300) setOpen(true);
         }}
@@ -68,6 +69,7 @@ export function NotificationBar() {
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={0.25}
               dragMomentum={false}
+              dragSnapToOrigin
               onDragEnd={(_, info: PanInfo) => {
                 if (info.offset.y < -60 || info.velocity.y < -400) setOpen(false);
               }}
