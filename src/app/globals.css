@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+:root {
+  /* Linkura palette — light/soft aesthetic sesuai app (sakura + purple-blue) */
+  --linkura-bg: #faf7ff;
+  --linkura-surface: #ffffff;
+  --linkura-surface-2: #f3ebff;
+  --linkura-border: #e4d7ff;
+  --linkura-text: #2a2545;
+  --linkura-text-dim: #786e95;
+
+  /* Brand gradient (header スクコネ, tombol primary) */
+  --linkura-primary: #8b82f5;
+  --linkura-primary-2: #b3aaff;
+  --linkura-accent-pink: #ffb3d9;
+  --linkura-accent-sky: #b3d4ff;
+  --linkura-accent-lemon: #fff2b3;
+
+  /* Unit theme colors */
+  --color-cerise: #ef5a8f;       /* Cerise Bouquet */
+  --color-dollchestra: #3b82f6;  /* DOLLCHESTRA */
+  --color-mirakura: #f59e0b;     /* Mirakura Park */
+  --color-edelnote: #8b5cf6;     /* Edel Note */
+  --color-hasunosora: #c084fc;   /* Hasu no Sora brand */
+}
+
+@theme inline {
+  --color-background: var(--linkura-bg);
+  --color-foreground: var(--linkura-text);
+  --color-surface: var(--linkura-surface);
+  --color-surface-2: var(--linkura-surface-2);
+  --color-border: var(--linkura-border);
+  --color-text-dim: var(--linkura-text-dim);
+  --color-primary: var(--linkura-primary);
+  --color-primary-2: var(--linkura-primary-2);
+
+  --color-cerise: var(--color-cerise);
+  --color-dollchestra: var(--color-dollchestra);
+  --color-mirakura: var(--color-mirakura);
+  --color-edelnote: var(--color-edelnote);
+  --color-hasunosora: var(--color-hasunosora);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  background: var(--linkura-bg);
+  color: var(--linkura-text);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 100%;
+}
+
+/* Wallpaper default — sakura + sky feel (pengganti image wallpaper asli yang belum ada) */
+.wallpaper-default {
+  background:
+    radial-gradient(ellipse at 20% 15%, rgba(255, 200, 230, 0.55) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 25%, rgba(179, 212, 255, 0.55) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(200, 180, 255, 0.5) 0%, transparent 55%),
+    linear-gradient(180deg, #fff5f9 0%, #f0eaff 50%, #e6efff 100%);
+}
+
+/* Scrollbar halus seperti mobile */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--linkura-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--linkura-text-dim);
+}
+
+/* Utility: brand gradient text untuk judul */
+.brand-gradient-text {
+  background: linear-gradient(90deg, #8b82f5 0%, #c98aff 50%, #ef5a8f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Utility: brand gradient background untuk header card */
+.brand-gradient-bg {
+  background: linear-gradient(135deg, #a5aeff 0%, #c9a5ff 50%, #ff99cc 100%);
+}
