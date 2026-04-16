@@ -1,27 +1,50 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useState } from "react";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 
 /**
- * NotificationBar — swipe-down notification panel style.
- * Default: hidden (hanya tampak indicator tipis di atas).
- * Klik/drag ke bawah: panel expand, tampilkan widget 今日の蓮の空.
- * Alternatif ke mini-widget di Home (Sample A).
+ * NotificationBar (Sample A) — swipe-down notification panel, ala HP.
+ * Pull handle tepat di bawah StatusBar:
+ *   - Swipe ke bawah → buka panel
+ *   - Tap pill → buka panel (fallback)
+ * Panel:
+ *   - Swipe ke atas / tap backdrop / tombol close → tutup
  */
 export function NotificationBar() {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <button
+      <motion.div
+        drag="y"
+        dragDirectionLock
+        dragConstraints={{ top: 0, bottom: 60 }}
+        dragElastic={0.4}
+        dragMomentum={false}
+        onDragEnd={(_, info: PanInfo) => {
+          if (info.offset.y > 28 || info.velocity.y > 300) setOpen(true);
+        }}
         onClick={() => setOpen(true)}
-        aria-label="Buka notifikasi"
-        className="absolute top-0 left-1/2 -translate-x-1/2 z-20 mt-1 px-4 py-0.5 rounded-full bg-white/70 backdrop-blur-sm shadow-sm active:scale-95 transition"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen(true);
+          }
+        }}
+        aria-label="Tarik ke bawah untuk buka notifikasi"
+        className="absolute inset-x-0 top-9 z-20 h-7 flex items-center justify-center cursor-grab active:cursor-grabbing touch-none select-none"
       >
-        <span className="block w-10 h-1 rounded-full bg-[var(--linkura-text-dim)]/50" />
-      </button>
+        <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/75 backdrop-blur-sm shadow-sm pointer-events-none">
+          <span className="block w-10 h-1 rounded-full bg-[var(--linkura-text-dim)]/60" />
+          <span className="text-[8px] text-[var(--linkura-text-dim)]/80 font-semibold tracking-wider">
+            ↓ SWIPE
+          </span>
+        </span>
+      </motion.div>
 
       <AnimatePresence>
         {open && (
@@ -40,7 +63,15 @@ export function NotificationBar() {
               animate={{ y: 0 }}
               exit={{ y: "-100%" }}
               transition={{ type: "spring", stiffness: 380, damping: 34 }}
-              className="absolute inset-x-0 top-0 z-40 bg-white/95 backdrop-blur-xl rounded-b-3xl shadow-2xl border-b border-[var(--linkura-border)] overflow-hidden"
+              drag="y"
+              dragDirectionLock
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0.25}
+              dragMomentum={false}
+              onDragEnd={(_, info: PanInfo) => {
+                if (info.offset.y < -60 || info.velocity.y < -400) setOpen(false);
+              }}
+              className="absolute inset-x-0 top-0 z-40 bg-white/95 backdrop-blur-xl rounded-b-3xl shadow-2xl border-b border-[var(--linkura-border)] overflow-hidden touch-none"
             >
               <div className="brand-gradient-bg px-4 py-2 flex items-center justify-between">
                 <span className="text-xs font-bold text-white drop-shadow">
@@ -55,8 +86,11 @@ export function NotificationBar() {
                 </button>
               </div>
               <NostalgiaWidget />
-              <div className="flex justify-center py-1 bg-gradient-to-b from-transparent to-[var(--linkura-surface-2)]/40">
+              <div className="flex flex-col items-center py-1.5 bg-gradient-to-b from-transparent to-[var(--linkura-surface-2)]/40">
                 <span className="block w-12 h-1 rounded-full bg-[var(--linkura-text-dim)]/40" />
+                <span className="text-[8px] text-[var(--linkura-text-dim)]/70 mt-0.5 tracking-wider">
+                  ↑ SWIPE UNTUK TUTUP
+                </span>
               </div>
             </motion.div>
           </>
