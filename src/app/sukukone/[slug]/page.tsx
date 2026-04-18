@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState } from "react";
 import Link from "next/link";
+import { LinkuraPlayer } from "@/components/video/LinkuraPlayer";
 
 const GET_SUKUKONE_VIDEO = gql`
   query GetSukukoneVideo($slug: ID!) {
@@ -191,15 +192,12 @@ export default function SukukoneDetailPage() {
 
   // YouTube embed
   const videoEmbed = d.youtubeVideoId ? (
-    <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black">
-      <iframe
-        src={`https://www.youtube-nocookie.com/embed/${d.youtubeVideoId}?rel=0&modestbranding=1`}
-        title={video.title}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="absolute inset-0 w-full h-full"
-      />
-    </div>
+    <LinkuraPlayer
+      videoId={d.youtubeVideoId}
+      title={video.title}
+      accentColor={unitColor}
+      thumbnailUrl={d.thumbnail?.node.sourceUrl}
+    />
   ) : (
     <div
       className="relative w-full aspect-video rounded-xl overflow-hidden flex items-center justify-center"

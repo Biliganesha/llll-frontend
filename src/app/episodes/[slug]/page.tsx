@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState } from "react";
 import Link from "next/link";
+import { LinkuraPlayer } from "@/components/video/LinkuraPlayer";
 
 const GET_EPISODE = gql`
   query GetEpisode($slug: ID!) {
@@ -114,15 +115,11 @@ export default function EpisodeDetailPage() {
     <>
       {/* Video Player */}
       {videoId ? (
-        <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg">
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`}
-            title={ep.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="absolute inset-0 w-full h-full"
-          />
-        </div>
+        <LinkuraPlayer
+          videoId={videoId}
+          title={ep.title}
+          accentColor="#8b82f5"
+        />
       ) : (
         <div
           className="w-full aspect-video rounded-xl flex flex-col items-center justify-center"
