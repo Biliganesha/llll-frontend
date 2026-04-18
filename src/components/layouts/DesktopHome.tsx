@@ -140,7 +140,7 @@ function DesktopDock({ onMenuClick }: { onMenuClick: () => void }) {
         />
         <div className="w-px h-10 bg-[var(--linkura-border)]" />
         <DockLink
-          href="/sukokone"
+          href="/sukukone"
           label="スクコネ"
           emoji="🎤"
           gradient="linear-gradient(135deg, #6a7bff 0%, #a88dff 100%)"
@@ -272,7 +272,7 @@ function LaunchpadOverlay({
               </div>
               <div className="p-6 grid grid-cols-4 gap-4">
                 <LaunchpadIcon
-                  href="/sukokone"
+                  href="/sukukone"
                   label="スクコネ"
                   sub="School Idol Connect"
                   emoji="🎤"

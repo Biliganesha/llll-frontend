@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ApolloWrapper } from "@/lib/ApolloWrapper";
+import { NavBarWrapper } from "@/components/ui/NavBarWrapper";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,7 +31,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <ApolloWrapper>
+          <NavBarWrapper />
+          {children}
+        </ApolloWrapper>
       </body>
     </html>
   );

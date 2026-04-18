@@ -102,7 +102,7 @@ function TabletDock({ onMenuClick }: { onMenuClick: () => void }) {
       <div className="flex items-center gap-1.5 px-2.5 py-2 rounded-2xl bg-white/75 backdrop-blur-xl border border-white/80 shadow-xl">
         <DockBtn onClick={onMenuClick} primary label="メニュー" emoji="☰" />
         <div className="w-px h-9 bg-[var(--linkura-border)]" />
-        <DockBtn href="/sukokone" label="スクコネ" emoji="🎤" gradient="linear-gradient(135deg, #6a7bff 0%, #a88dff 100%)" />
+        <DockBtn href="/sukukone" label="スクコネ" emoji="🎤" gradient="linear-gradient(135deg, #6a7bff 0%, #a88dff 100%)" />
         <DockBtn href="/katsudou-kiroku" label="活動記録" emoji="📖" gradient="linear-gradient(135deg, #ffb3d9 0%, #b3d4ff 100%)" />
         <DockBtn href="/characters" label="メンバー" emoji="🎀" gradient="linear-gradient(135deg, #ffd59e 0%, #ffb3c1 100%)" />
       </div>
@@ -198,7 +198,7 @@ function TabletLaunchpad({
                 </button>
               </div>
               <div className="p-5 grid grid-cols-3 gap-3">
-                <LpIcon href="/sukokone" label="スクコネ" emoji="🎤" gradient="linear-gradient(135deg, #6a7bff 0%, #a88dff 100%)" />
+                <LpIcon href="/sukukone" label="スクコネ" emoji="🎤" gradient="linear-gradient(135deg, #6a7bff 0%, #a88dff 100%)" />
                 <LpIcon href="/katsudou-kiroku" label="活動記録" emoji="📖" gradient="linear-gradient(135deg, #ffb3d9 0%, #b3d4ff 100%)" />
                 <LpIcon href="/calendar" label="カレンダー" emoji="📅" gradient="linear-gradient(135deg, #9ee6ff 0%, #a5aeff 100%)" />
                 <LpIcon href="/characters" label="メンバー" emoji="🎀" gradient="linear-gradient(135deg, #ffd59e 0%, #ffb3c1 100%)" />

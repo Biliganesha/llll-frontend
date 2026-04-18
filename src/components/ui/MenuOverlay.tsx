@@ -54,7 +54,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
 
             <div className="p-3 space-y-3">
               <ShortcutCard
-                href="/sukokone"
+                href="/sukukone"
                 title="スクールアイドル"
                 subtitle="コネクト"
                 description="Archives · WxSTATION · Music Video"
@@ -63,7 +63,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
               />
 
               <ShortcutCard
-                href="/katsudou-kiroku"
+                href="/episodes"
                 title="活動記録"
                 subtitle="Episode Story"
                 description="Timeline real-calendar 蓮の空"
@@ -86,7 +86,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
                   <MiniIcon href="/units" label="Units" emoji="💫" />
                   <MiniIcon href="/timeline" label="Timeline" emoji="🕰️" />
                   <MiniIcon href="/search" label="Search" emoji="🔍" />
-                  <MiniIcon href="/community" label="Forum" emoji="💬" />
+                  <MiniIcon href="/community" label="Forum" emoji="💬" disabled />
                   <MiniIcon href="/gameplay" label="Gameplay" emoji="🎮" />
                   <MiniIcon href="/about" label="About" emoji="ℹ️" />
                 </div>
@@ -151,11 +151,26 @@ function MiniIcon({
   href,
   label,
   emoji,
+  disabled,
 }: {
   href: string;
   label: string;
   emoji: string;
+  disabled?: boolean;
 }) {
+  if (disabled) {
+    return (
+      <div className="flex flex-col items-center gap-1 p-2 rounded-xl opacity-35 cursor-not-allowed">
+        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-lg shadow-sm">
+          {emoji}
+        </div>
+        <span className="text-[10px] font-medium text-[var(--linkura-text-dim)] text-center leading-tight">
+          {label}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <Link
       href={href}
