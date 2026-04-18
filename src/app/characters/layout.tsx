@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "メンバー — LLLL 蓮の空アーカイブ",
+  title: "メンバー — 蓮の空",
   description: "蓮ノ空女学院スクールアイドルクラブのメンバー一覧。プロフィール・ユニット情報。",
 };
 

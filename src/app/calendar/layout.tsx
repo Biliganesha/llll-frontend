@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "カレンダー — LLLL 蓮の空アーカイブ",
+  title: "カレンダー — 蓮の空",
   description: "蓮の空のイベントカレンダー。エピソード配信日・スクコネ・誕生日を月別に確認。",
 };
 

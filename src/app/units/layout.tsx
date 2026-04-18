@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ユニット — LLLL 蓮の空アーカイブ",
+  title: "ユニット — 蓮の空",
   description: "蓮ノ空女学院のスクールアイドルユニット一覧。スリーズブーケ、DOLLCHESTRA、みらくらぱーく！、Edel Note。",
 };
 
