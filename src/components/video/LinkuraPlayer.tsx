@@ -7,6 +7,8 @@ type LinkuraPlayerProps = {
   title?: string;
   accentColor?: string;
   thumbnailUrl?: string;
+  hasSubtitleJp?: boolean;
+  hasSubtitleId?: boolean;
 };
 
 // YouTube IFrame API types
@@ -23,6 +25,10 @@ interface YTPlayer {
   mute(): void;
   unMute(): void;
   destroy(): void;
+  loadModule(module: string): void;
+  getOptions(module?: string): string[];
+  getOption(module: string, option: string): unknown;
+  setOption(module: string, option: string, value: unknown): void;
 }
 
 interface YTPlayerEvent {
@@ -99,6 +105,8 @@ export function LinkuraPlayer({
   title,
   accentColor = "#8b82f5",
   thumbnailUrl,
+  hasSubtitleJp,
+  hasSubtitleId,
 }: LinkuraPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
@@ -111,7 +119,9 @@ export function LinkuraPlayer({
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const [muted, setMuted] = useState(false);
+  const [captionLang, setCaptionLang] = useState<"off" | "jp" | "id">("off");
   const hideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasSubtitles = hasSubtitleJp || hasSubtitleId;
 
   const thumb = thumbnailUrl || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
@@ -213,6 +223,54 @@ export function LinkuraPlayer({
     } else {
       playerRef.current.mute();
       setMuted(true);
+    }
+  };
+
+  const cycleCaption = () => {
+    if (!playerRef.current) return;
+    const player = playerRef.current;
+    try {
+      player.loadModule("captions");
+    } catch {
+      // module may already be loaded
+    }
+
+    // Cycle: off → jp → id → off (only available langs)
+    const langs: ("jp" | "id")[] = [];
+    if (hasSubtitleJp) langs.push("jp");
+    if (hasSubtitleId) langs.push("id");
+    if (langs.length === 0) return;
+
+    const langCodes: Record<string, string> = { jp: "ja", id: "id" };
+
+    if (captionLang === "off") {
+      const next = langs[0];
+      try {
+        player.setOption("captions", "track", { languageCode: langCodes[next] });
+      } catch {
+        // fallback
+      }
+      setCaptionLang(next);
+    } else {
+      const currentIdx = langs.indexOf(captionLang as "jp" | "id");
+      const nextIdx = currentIdx + 1;
+      if (nextIdx >= langs.length) {
+        // Turn off
+        try {
+          player.setOption("captions", "track", {});
+        } catch {
+          // fallback
+        }
+        setCaptionLang("off");
+      } else {
+        const next = langs[nextIdx];
+        try {
+          player.setOption("captions", "track", { languageCode: langCodes[next] });
+        } catch {
+          // fallback
+        }
+        setCaptionLang(next);
+      }
     }
   };
 
@@ -338,6 +396,21 @@ export function LinkuraPlayer({
             </span>
 
             <div className="flex-1" />
+
+            {/* Subtitle toggle */}
+            {hasSubtitles && (
+              <button
+                onClick={(e) => { e.stopPropagation(); cycleCaption(); }}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors cursor-pointer ${
+                  captionLang !== "off"
+                    ? "text-white bg-white/25"
+                    : "text-white/50 hover:text-white/80"
+                }`}
+                title={captionLang === "off" ? "字幕 ON" : captionLang === "jp" ? "日本語字幕" : "Subtitle ID"}
+              >
+                {captionLang === "off" ? "CC" : captionLang === "jp" ? "JP" : "ID"}
+              </button>
+            )}
 
             {/* Mute */}
             <button

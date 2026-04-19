@@ -119,6 +119,8 @@ export default function EpisodeDetailPage() {
           videoId={videoId}
           title={ep.title}
           accentColor="#8b82f5"
+          hasSubtitleJp={!!d.hasSubtitleJp}
+          hasSubtitleId={!!d.hasSubtitleId}
         />
       ) : (
         <div

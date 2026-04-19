@@ -79,7 +79,7 @@ type SukukoneNode = {
 
 type QueryData = { sukukoneVideos: { nodes: SukukoneNode[] } };
 
-type TabId = "upcoming" | "archives" | "wxstation" | "mv" | "ranking";
+type TabId = "upcoming" | "archives" | "wxstation" | "mv" | "channel" | "ranking";
 
 const TABS: { id: TabId; label: string; disabled: boolean; disabledMsg?: string }[] = [
   {
@@ -91,6 +91,7 @@ const TABS: { id: TabId; label: string; disabled: boolean; disabledMsg?: string 
   { id: "archives", label: "ARCHIVES", disabled: false },
   { id: "wxstation", label: "WxSTATION", disabled: false },
   { id: "mv", label: "MUSIC VIDEO", disabled: false },
+  { id: "channel", label: "CHANNEL", disabled: false },
   {
     id: "ranking",
     label: "RANKING",
@@ -100,6 +101,7 @@ const TABS: { id: TabId; label: string; disabled: boolean; disabledMsg?: string 
 ];
 
 function filterByTab(videos: SukukoneNode[], tab: TabId): SukukoneNode[] {
+  if (tab === "channel") return videos; // channel view groups all videos by unit
   return videos.filter((v) => {
     const type = v.sukukoneVideoDetails.tabType?.[0];
     switch (tab) {
@@ -113,6 +115,24 @@ function filterByTab(videos: SukukoneNode[], tab: TabId): SukukoneNode[] {
         return false;
     }
   });
+}
+
+function groupByUnit(videos: SukukoneNode[]): { unitName: string; unitColor: string; unitSlug: string | null; videos: SukukoneNode[] }[] {
+  const groups: Record<string, { unitName: string; unitColor: string; unitSlug: string | null; videos: SukukoneNode[] }> = {};
+  for (const v of videos) {
+    const unit = v.sukukoneVideoDetails.unit?.nodes[0];
+    const key = unit?.title || "その他";
+    if (!groups[key]) {
+      groups[key] = {
+        unitName: unit?.title || "その他",
+        unitColor: unit?.unitDetails.colorPrimary || "var(--linkura-primary)",
+        unitSlug: null,
+        videos: [],
+      };
+    }
+    groups[key].videos.push(v);
+  }
+  return Object.values(groups);
 }
 
 function formatDate(iso: string | null): string {
@@ -186,6 +206,40 @@ export default function SukukonePage() {
     </div>
   );
 
+  const unitGroups = activeTab === "channel" ? groupByUnit(filtered) : [];
+
+  const channelView = (variant: "list" | "card", cols?: number) => (
+    <div className="space-y-6">
+      {unitGroups.map((group) => (
+        <div key={group.unitName}>
+          <div className="flex items-center gap-2 mb-3">
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{ background: group.unitColor }}
+            />
+            <h3 className="text-sm font-bold" style={{ color: group.unitColor }}>
+              {group.unitName}
+            </h3>
+            <span className="text-[11px] text-text-dim">({group.videos.length})</span>
+          </div>
+          {variant === "list" ? (
+            <div className="space-y-3">
+              {group.videos.map((v) => (
+                <VideoCard key={v.databaseId} video={v} />
+              ))}
+            </div>
+          ) : (
+            <div className={`grid gap-4 ${cols === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+              {group.videos.map((v) => (
+                <VideoCard key={v.databaseId} video={v} card />
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+
   const videoList = loading ? (
     <VideoListSkeleton />
   ) : error ? (
@@ -197,6 +251,8 @@ export default function SukukonePage() {
     <div className="py-12 text-center text-text-dim text-sm">
       {activeTabConfig.label}のコンテンツはまだありません
     </div>
+  ) : activeTab === "channel" ? (
+    channelView("list")
   ) : (
     <div className="space-y-3">
       {filtered.map((v) => (
@@ -245,17 +301,21 @@ export default function SukukonePage() {
         {disabledBanner}
 
         <main className="flex-1 px-6 pt-4 pb-6 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-4">
-            {loading ? (
+          {loading ? (
+            <div className="grid grid-cols-2 gap-4">
               <VideoListSkeleton grid />
-            ) : filtered.length === 0 ? (
-              <div className="col-span-2 py-12 text-center text-text-dim text-sm">
-                {activeTabConfig.label}のコンテンツはまだありません
-              </div>
-            ) : (
-              filtered.map((v) => <VideoCard key={v.databaseId} video={v} card />)
-            )}
-          </div>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-12 text-center text-text-dim text-sm">
+              {activeTabConfig.label}のコンテンツはまだありません
+            </div>
+          ) : activeTab === "channel" ? (
+            channelView("card")
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {filtered.map((v) => <VideoCard key={v.databaseId} video={v} card />)}
+            </div>
+          )}
         </main>
       </div>
 
@@ -273,17 +333,21 @@ export default function SukukonePage() {
         </div>
 
         <main className="max-w-5xl mx-auto w-full px-8 pt-4 pb-8 flex-1">
-          <div className="grid grid-cols-3 gap-5">
-            {loading ? (
+          {loading ? (
+            <div className="grid grid-cols-3 gap-5">
               <VideoListSkeleton grid />
-            ) : filtered.length === 0 ? (
-              <div className="col-span-3 py-12 text-center text-text-dim text-sm">
-                {activeTabConfig.label}のコンテンツはまだありません
-              </div>
-            ) : (
-              filtered.map((v) => <VideoCard key={v.databaseId} video={v} card />)
-            )}
-          </div>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-12 text-center text-text-dim text-sm">
+              {activeTabConfig.label}のコンテンツはまだありません
+            </div>
+          ) : activeTab === "channel" ? (
+            channelView("card", 3)
+          ) : (
+            <div className="grid grid-cols-3 gap-5">
+              {filtered.map((v) => <VideoCard key={v.databaseId} video={v} card />)}
+            </div>
+          )}
         </main>
       </div>
     </>

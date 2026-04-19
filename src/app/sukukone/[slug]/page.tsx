@@ -197,6 +197,8 @@ export default function SukukoneDetailPage() {
       title={video.title}
       accentColor={unitColor}
       thumbnailUrl={d.thumbnail?.node.sourceUrl}
+      hasSubtitleJp={!!d.hasSubtitleJp}
+      hasSubtitleId={!!d.hasSubtitleId}
     />
   ) : (
     <div
