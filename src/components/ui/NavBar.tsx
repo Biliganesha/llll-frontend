@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/characters", label: "メンバー" },
   { href: "/units", label: "ユニット" },
   { href: "/calendar", label: "カレンダー" },
+  { href: "/relationships", label: "相関図" },
 ];
 
 /**

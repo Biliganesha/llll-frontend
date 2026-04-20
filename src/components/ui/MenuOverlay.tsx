@@ -86,6 +86,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
                   <MiniIcon href="/units" label="Units" emoji="💫" />
                   <MiniIcon href="/timeline" label="Timeline" emoji="🕰️" />
                   <MiniIcon href="/search" label="Search" emoji="🔍" />
+                  <MiniIcon href="/relationships" label="相関図" emoji="🔗" />
                   <MiniIcon href="/community" label="Forum" emoji="💬" disabled />
                   <MiniIcon href="/gameplay" label="Gameplay" emoji="🎮" />
                   <MiniIcon href="/about" label="About" emoji="ℹ️" />
