@@ -11,6 +11,7 @@ import Link from "next/link";
 import { LinkuraPlayer } from "@/components/video/LinkuraPlayer";
 import { useLanguage } from "@/lib/language";
 import { translate } from "@/lib/translations";
+import { CommentSection } from "@/components/comments/CommentSection";
 
 const GET_SUKUKONE_VIDEO = gql`
   query GetSukukoneVideo($slug: ID!) {
@@ -331,6 +332,8 @@ export default function SukukoneDetailPage() {
     </div>
   ) : null;
 
+  const commentsSection = <CommentSection postDatabaseId={video.databaseId} accentColor={unitColor} />;
+
   return (
     <>
       {/* ===== PHONE ===== */}
@@ -345,6 +348,7 @@ export default function SukukoneDetailPage() {
           <div className="mt-3">{infoTable}</div>
           {performersSection}
           {summarySection}
+          {commentsSection}
         </main>
         <BottomNav
           onBack={() => router.back()}
@@ -367,6 +371,7 @@ export default function SukukoneDetailPage() {
             <div className="flex-1">
               {performersSection}
               {summarySection}
+              {commentsSection}
             </div>
             <div className="w-64 shrink-0">
               {infoTable}
@@ -387,6 +392,7 @@ export default function SukukoneDetailPage() {
               {videoEmbed}
               {performersSection}
               {summarySection}
+              {commentsSection}
             </div>
             <div className="w-72 shrink-0">
               {infoTable}

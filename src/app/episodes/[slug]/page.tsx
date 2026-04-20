@@ -11,6 +11,7 @@ import Link from "next/link";
 import { LinkuraPlayer } from "@/components/video/LinkuraPlayer";
 import { useLanguage } from "@/lib/language";
 import { translate } from "@/lib/translations";
+import { CommentSection } from "@/components/comments/CommentSection";
 
 const GET_EPISODE = gql`
   query GetEpisode($slug: ID!) {
@@ -181,6 +182,9 @@ export default function EpisodeDetailPage() {
           {translate("episodes.originalSource", lang)}
         </a>
       )}
+
+      {/* Comments */}
+      <CommentSection postDatabaseId={ep.databaseId} accentColor="#8b82f5" />
     </>
   );
 
