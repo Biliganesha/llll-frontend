@@ -31,7 +31,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const setLang = useCallback((newLang: Lang) => {
     setLangState(newLang);
     localStorage.setItem(STORAGE_KEY, newLang);
+    document.documentElement.lang = newLang === "jp" ? "ja" : "id";
   }, []);
+
+  // Sync lang attribute on mount
+  useEffect(() => {
+    document.documentElement.lang = lang === "jp" ? "ja" : "id";
+  }, [lang]);
 
   const t = useCallback(
     (jp: string | null | undefined, id: string | null | undefined): string => {
