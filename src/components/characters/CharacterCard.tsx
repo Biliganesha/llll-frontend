@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 type CharacterCardProps = {
   slug: string;
@@ -46,10 +47,12 @@ export function CharacterCard({
         }}
       >
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={nameJp}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

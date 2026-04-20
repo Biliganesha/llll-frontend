@@ -10,6 +10,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/language";
 import { translate } from "@/lib/translations";
+import Image from "next/image";
 
 const GET_CHARACTER = gql`
   query GetCharacter($slug: ID!) {
@@ -176,7 +177,7 @@ export default function CharacterDetailPage() {
             }}
           >
             {heroImage ? (
-              <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />
+              <Image src={heroImage} alt={d.nameJp} fill sizes="100vw" className="object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <span className="text-8xl opacity-20">🎀</span>
@@ -255,7 +256,7 @@ export default function CharacterDetailPage() {
             style={{ background: `linear-gradient(180deg, ${color}25 0%, ${color}10 100%)` }}
           >
             {heroImage ? (
-              <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover sticky top-0" />
+              <Image src={heroImage} alt={d.nameJp} fill sizes="40vw" className="object-cover sticky top-0" />
             ) : (
               <div className="w-full h-full flex items-center justify-center sticky top-0">
                 <span className="text-8xl opacity-20">🎀</span>
@@ -320,7 +321,7 @@ export default function CharacterDetailPage() {
                 style={{ background: `linear-gradient(180deg, ${color}20 0%, ${color}40 100%)` }}
               >
                 {heroImage ? (
-                  <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />
+                  <Image src={heroImage} alt={d.nameJp} fill sizes="320px" className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <span className="text-8xl opacity-20">🎀</span>
@@ -330,10 +331,12 @@ export default function CharacterDetailPage() {
 
               {d.imageChibi?.node.sourceUrl && (
                 <div className="mt-4 flex justify-center">
-                  <img
+                  <Image
                     src={d.imageChibi.node.sourceUrl}
                     alt={`${d.nameJp} chibi`}
-                    className="h-24 object-contain"
+                    width={96}
+                    height={96}
+                    className="h-24 w-auto object-contain"
                   />
                 </div>
               )}

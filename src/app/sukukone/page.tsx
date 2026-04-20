@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 const GET_SUKUKONE = gql`
   query GetSukukoneVideos {
@@ -378,12 +379,12 @@ function VideoCard({
         {/* Thumbnail */}
         <div className="relative aspect-video" style={{ background: `${unitColor}15` }}>
           {thumbUrl ? (
-            <img src={thumbUrl} alt={video.title} className="w-full h-full object-cover" />
+            <Image src={thumbUrl} alt={video.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
           ) : d.youtubeVideoId ? (
-            <img
+            <Image
               src={`https://img.youtube.com/vi/${d.youtubeVideoId}/mqdefault.jpg`}
               alt={video.title}
-              className="w-full h-full object-cover"
+              fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -428,12 +429,12 @@ function VideoCard({
       {/* Thumbnail */}
       <div className="relative w-32 shrink-0 aspect-video rounded-lg overflow-hidden" style={{ background: `${unitColor}15` }}>
         {thumbUrl ? (
-          <img src={thumbUrl} alt={video.title} className="w-full h-full object-cover" />
+          <Image src={thumbUrl} alt={video.title} fill sizes="128px" className="object-cover" />
         ) : d.youtubeVideoId ? (
-          <img
+          <Image
             src={`https://img.youtube.com/vi/${d.youtubeVideoId}/mqdefault.jpg`}
             alt={video.title}
-            className="w-full h-full object-cover"
+            fill sizes="128px" className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
