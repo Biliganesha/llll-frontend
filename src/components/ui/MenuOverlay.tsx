@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
+import { useLanguage } from "@/lib/language";
 
 type MenuOverlayProps = {
   open: boolean;
@@ -15,6 +16,8 @@ type MenuOverlayProps = {
  * Isi: card shortcut besar (スクコネ, 活動記録), grid ikon fitur lain, nostalgia widget.
  */
 export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
+  const { lang, setLang } = useLanguage();
+
   return (
     <AnimatePresence>
       {open && (
@@ -40,6 +43,13 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
           >
             <div className="sticky top-0 brand-gradient-bg px-4 py-2.5 flex items-center justify-between border-b border-white/40">
               <h2 className="text-sm font-bold text-white drop-shadow">メニュー</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setLang(lang === "jp" ? "id" : "jp")}
+                  className="px-2 py-1 rounded-full bg-white/30 hover:bg-white/50 text-[10px] font-bold text-white transition cursor-pointer"
+                >
+                  {lang === "jp" ? "JP → ID" : "ID → JP"}
+                </button>
               <button
                 onClick={onClose}
                 aria-label="Tutup menu"
@@ -50,6 +60,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
+              </div>
             </div>
 
             <div className="p-3 space-y-3">

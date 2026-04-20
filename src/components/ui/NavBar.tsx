@@ -2,23 +2,26 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/lib/language";
+import { translate } from "@/lib/translations";
 
 const NAV_ITEMS = [
-  { href: "/", label: "ホーム" },
-  { href: "/episodes", label: "活動記録" },
-  { href: "/sukukone", label: "スクコネ" },
-  { href: "/characters", label: "メンバー" },
-  { href: "/units", label: "ユニット" },
-  { href: "/calendar", label: "カレンダー" },
-  { href: "/relationships", label: "相関図" },
+  { href: "/", labelKey: "nav.home" as const },
+  { href: "/episodes", labelKey: "nav.episodes" as const },
+  { href: "/sukukone", labelKey: "nav.sukukone" as const },
+  { href: "/characters", labelKey: "nav.members" as const },
+  { href: "/units", labelKey: "nav.units" as const },
+  { href: "/calendar", labelKey: "nav.calendar" as const },
+  { href: "/relationships", labelKey: "nav.relationships" as const },
 ];
 
 /**
  * NavBar — top navigation for tablet and desktop layouts.
- * Compact horizontal bar with brand name + nav links.
+ * Compact horizontal bar with brand name + nav links + language toggle.
  */
 export function NavBar() {
   const pathname = usePathname();
+  const { lang, setLang } = useLanguage();
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border">
@@ -51,11 +54,20 @@ export function NavBar() {
                     : "text-text-dim hover:text-foreground hover:bg-surface-2"
                 }`}
               >
-                {item.label}
+                {translate(item.labelKey, lang)}
               </Link>
             );
           })}
         </div>
+
+        {/* Language toggle */}
+        <button
+          onClick={() => setLang(lang === "jp" ? "id" : "jp")}
+          className="shrink-0 px-2 py-1 rounded-lg text-xs font-bold transition-colors bg-surface-2 hover:bg-primary/10 text-text-dim hover:text-primary cursor-pointer"
+          title={lang === "jp" ? "Ganti ke Bahasa Indonesia" : "日本語に切り替え"}
+        >
+          {lang === "jp" ? "JP" : "ID"}
+        </button>
 
         {/* Search */}
         <Link
@@ -65,7 +77,7 @@ export function NavBar() {
               ? "bg-primary/10 text-primary"
               : "text-text-dim hover:text-foreground hover:bg-surface-2"
           }`}
-          aria-label="検索"
+          aria-label={translate("nav.search", lang)}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" />

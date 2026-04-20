@@ -5,6 +5,8 @@ import { StatusBar } from "@/components/ui/StatusBar";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/language";
+import { translate } from "@/lib/translations";
 
 const SECTIONS = [
   {
@@ -46,14 +48,16 @@ const SECTIONS = [
 export default function AboutPage() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { lang, t } = useLanguage();
+
+  const missionJp = "蓮の空の物語を、ファンの手で伝統にする";
+  const missionId = "Menjadikan cerita 蓮の空 sebagai tradisi, oleh tangan para penggemar";
 
   const content = (
     <div className="space-y-6">
       {/* Logo / Title */}
       <div className="text-center py-6">
-        <h1 className="text-3xl font-extrabold brand-gradient-text">
-          LLLL
-        </h1>
+        <h1 className="text-3xl font-extrabold brand-gradient-text">LLLL</h1>
         <p className="text-sm text-text-dim mt-1">Link! Like! Library! Legacy!</p>
         <p className="text-xs text-text-dim mt-0.5">蓮の空アーカイブ</p>
       </div>
@@ -61,10 +65,7 @@ export default function AboutPage() {
       {/* Mission statement */}
       <div className="rounded-xl p-4" style={{ background: "linear-gradient(135deg, #fff0f5, #f0eaff)" }}>
         <p className="text-sm text-center italic" style={{ color: "var(--linkura-primary)" }}>
-          蓮の空の物語を、ファンの手で伝統にする
-        </p>
-        <p className="text-xs text-center text-text-dim mt-1">
-          Menjadikan cerita 蓮の空 sebagai tradisi, oleh tangan para penggemar
+          {t(missionJp, missionId)}
         </p>
       </div>
 
@@ -72,18 +73,12 @@ export default function AboutPage() {
       {SECTIONS.map((section, i) => (
         <div key={i} className="rounded-xl border border-border overflow-hidden">
           <div className="px-4 py-3 bg-surface-2/50">
-            <h2 className="text-sm font-bold">{section.titleJp}</h2>
-            <p className="text-xs text-text-dim">{section.titleId}</p>
+            <h2 className="text-sm font-bold">{t(section.titleJp, section.titleId)}</h2>
           </div>
           <div className="px-4 py-3">
-            {section.contentJp && (
+            {(section.contentJp || section.contentId) && (
               <p className="text-sm leading-relaxed text-foreground/80">
-                {section.contentJp}
-              </p>
-            )}
-            {section.contentId && (
-              <p className="text-xs leading-relaxed text-text-dim mt-2">
-                {section.contentId}
+                {t(section.contentJp, section.contentId)}
               </p>
             )}
             {section.links && (
@@ -112,7 +107,7 @@ export default function AboutPage() {
 
       {/* Contact */}
       <div className="rounded-xl border border-border px-4 py-3">
-        <h2 className="text-sm font-bold">お問い合わせ / Kontak</h2>
+        <h2 className="text-sm font-bold">{t("お問い合わせ", "Kontak")}</h2>
         <p className="text-xs text-text-dim mt-1">
           Email: <span className="text-primary">safetyganesha@gmail.com</span>
         </p>
@@ -130,7 +125,7 @@ export default function AboutPage() {
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen bg-background relative">
-        <StatusBar episodeCount={0} unitLabel="About" />
+        <StatusBar episodeCount={0} unitLabel={translate("about.title", lang)} />
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">
           {content}
         </main>

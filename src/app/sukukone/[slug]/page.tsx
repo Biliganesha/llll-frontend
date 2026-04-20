@@ -9,6 +9,8 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState } from "react";
 import Link from "next/link";
 import { LinkuraPlayer } from "@/components/video/LinkuraPlayer";
+import { useLanguage } from "@/lib/language";
+import { translate } from "@/lib/translations";
 
 const GET_SUKUKONE_VIDEO = gql`
   query GetSukukoneVideo($slug: ID!) {
@@ -153,6 +155,7 @@ export default function SukukoneDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { lang, t } = useLanguage();
   const slug = params.slug as string;
 
   const { data, loading, error } = useQuery<QueryData>(GET_SUKUKONE_VIDEO, {
@@ -220,7 +223,7 @@ export default function SukukoneDetailPage() {
   const infoRows: { label: string; value: React.ReactNode }[] = [];
 
   infoRows.push({
-    label: "タイプ",
+    label: translate("sukukone.type", lang),
     value: (
       <span
         className="inline-block px-2 py-0.5 rounded text-xs font-bold text-white"
@@ -231,12 +234,12 @@ export default function SukukoneDetailPage() {
     ),
   });
 
-  if (d.airDate) infoRows.push({ label: "配信日", value: formatDate(d.airDate) });
-  if (d.durationSeconds) infoRows.push({ label: "時間", value: formatDuration(d.durationSeconds) });
+  if (d.airDate) infoRows.push({ label: translate("episodes.airDate", lang), value: formatDate(d.airDate) });
+  if (d.durationSeconds) infoRows.push({ label: translate("episodes.duration", lang), value: formatDuration(d.durationSeconds) });
 
   if (unit) {
     infoRows.push({
-      label: "ユニット",
+      label: translate("sukukone.unit", lang),
       value: (
         <Link href={`/units/${unit.slug}`} className="hover:underline" style={{ color: unitColor }}>
           {unit.unitDetails.nameJp}
@@ -249,12 +252,12 @@ export default function SukukoneDetailPage() {
     const subs: string[] = [];
     if (d.hasSubtitleJp) subs.push("JP");
     if (d.hasSubtitleId) subs.push("ID");
-    infoRows.push({ label: "字幕", value: subs.join(" / ") });
+    infoRows.push({ label: translate("sukukone.subtitle", lang), value: subs.join(" / ") });
   }
 
   if (relatedEpisode) {
     infoRows.push({
-      label: "関連話",
+      label: translate("sukukone.relatedEp", lang),
       value: (
         <Link href={`/episodes/${relatedEpisode.slug}`} className="hover:underline text-primary">
           {relatedEpisode.episodeDetails.episodeNumber
@@ -283,7 +286,7 @@ export default function SukukoneDetailPage() {
   // Performers section
   const performersSection = performers.length > 0 && (
     <div className="mt-4">
-      <h2 className="text-sm font-bold text-text-dim mb-2">出演メンバー</h2>
+      <h2 className="text-sm font-bold text-text-dim mb-2">{translate("sukukone.performers", lang)}</h2>
       <div className="flex flex-wrap gap-2">
         {performers.map((p) => (
           <Link
@@ -316,29 +319,17 @@ export default function SukukoneDetailPage() {
     </div>
   );
 
-  // Summary section
-  const summarySection = (
-    <>
-      {d.summaryJp && (
-        <div className="mt-4">
-          <h2 className="text-sm font-bold text-text-dim mb-1">概要</h2>
-          <div
-            className="text-sm leading-relaxed text-foreground/80"
-            dangerouslySetInnerHTML={{ __html: d.summaryJp }}
-          />
-        </div>
-      )}
-      {d.summaryId && (
-        <div className="mt-3">
-          <p className="text-xs font-bold text-text-dim mb-1">Ringkasan (ID)</p>
-          <div
-            className="text-sm leading-relaxed text-text-dim"
-            dangerouslySetInnerHTML={{ __html: d.summaryId }}
-          />
-        </div>
-      )}
-    </>
-  );
+  // Summary section — show only the active language, fallback to other
+  const summaryHtml = t(d.summaryJp, d.summaryId);
+  const summarySection = summaryHtml ? (
+    <div className="mt-4">
+      <h2 className="text-sm font-bold text-text-dim mb-1">{translate("sukukone.summary", lang)}</h2>
+      <div
+        className="text-sm leading-relaxed text-foreground/80"
+        dangerouslySetInnerHTML={{ __html: summaryHtml }}
+      />
+    </div>
+  ) : null;
 
   return (
     <>
@@ -347,7 +338,7 @@ export default function SukukoneDetailPage() {
         <StatusBar episodeCount={0} unitLabel="スクコネ" />
         <main className="flex-1 px-3 pt-2 pb-20 overflow-y-auto">
           <Link href="/sukukone" className="text-xs text-text-dim hover:underline">
-            ← スクコネ
+            {`← ${translate("nav.sukukone", lang)}`}
           </Link>
           <h1 className="text-lg font-bold mt-2 mb-3">{video.title}</h1>
           {videoEmbed}
@@ -368,7 +359,7 @@ export default function SukukoneDetailPage() {
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6">
           <Link href="/sukukone" className="text-xs text-text-dim hover:underline">
-            ← スクコネ
+            {`← ${translate("nav.sukukone", lang)}`}
           </Link>
           <h1 className="text-xl font-bold mt-3 mb-4">{video.title}</h1>
           {videoEmbed}
@@ -388,7 +379,7 @@ export default function SukukoneDetailPage() {
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-5xl mx-auto w-full px-8 py-8">
           <Link href="/sukukone" className="text-sm text-text-dim hover:underline">
-            ← スクコネ
+            {`← ${translate("nav.sukukone", lang)}`}
           </Link>
           <h1 className="text-2xl font-bold mt-4 mb-4">{video.title}</h1>
           <div className="flex gap-8">

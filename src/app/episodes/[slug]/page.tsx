@@ -9,6 +9,8 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState } from "react";
 import Link from "next/link";
 import { LinkuraPlayer } from "@/components/video/LinkuraPlayer";
+import { useLanguage } from "@/lib/language";
+import { translate } from "@/lib/translations";
 
 const GET_EPISODE = gql`
   query GetEpisode($slug: ID!) {
@@ -53,7 +55,7 @@ type EpisodeDetail = {
 type QueryData = { episode: EpisodeDetail | null };
 
 function formatDate(iso: string | null): string {
-  if (!iso) return "不明";
+  if (!iso) return "—";
   const d = new Date(iso);
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
 }
@@ -69,6 +71,7 @@ export default function EpisodeDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { lang } = useLanguage();
   const slug = params.slug as string;
 
   const { data, loading, error } = useQuery<QueryData>(GET_EPISODE, {
@@ -81,7 +84,7 @@ export default function EpisodeDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-text-dim">読み込み中...</div>
+        <div className="animate-pulse text-text-dim">{translate("common.loading", lang)}</div>
       </div>
     );
   }
@@ -91,10 +94,10 @@ export default function EpisodeDetailPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <p className="text-lg font-bold text-red-400">
-            {error ? "エラー" : "エピソードが見つかりません"}
+            {error ? translate("common.error", lang) : translate("common.notFound", lang)}
           </p>
           <Link href="/episodes" className="mt-4 inline-block text-sm underline text-primary">
-            活動記録に戻る
+            {translate("episodes.backToList", lang)}
           </Link>
         </div>
       </div>
@@ -104,12 +107,12 @@ export default function EpisodeDetailPage() {
   const videoId = d.youtubeVideoId;
 
   const infoRows: { label: string; value: string }[] = [
-    { label: "配信日", value: formatDate(d.releaseDate) },
+    { label: translate("episodes.airDate", lang), value: formatDate(d.releaseDate) },
   ];
-  if (d.episodeNumber) infoRows.push({ label: "話数", value: `第${d.episodeNumber}話` });
-  if (d.durationSeconds) infoRows.push({ label: "再生時間", value: formatDuration(d.durationSeconds) });
-  if (d.hasSubtitleJp) infoRows.push({ label: "JP字幕", value: "あり" });
-  if (d.hasSubtitleId) infoRows.push({ label: "ID字幕", value: "あり" });
+  if (d.episodeNumber) infoRows.push({ label: translate("episodes.episodeNumber", lang), value: `第${d.episodeNumber}話` });
+  if (d.durationSeconds) infoRows.push({ label: translate("episodes.duration", lang), value: formatDuration(d.durationSeconds) });
+  if (d.hasSubtitleJp) infoRows.push({ label: translate("episodes.subtitleJp", lang), value: "あり" });
+  if (d.hasSubtitleId) infoRows.push({ label: translate("episodes.subtitleId", lang), value: "あり" });
 
   const content = (
     <>
@@ -130,7 +133,7 @@ export default function EpisodeDetailPage() {
           }}
         >
           <span className="text-4xl mb-2">📼</span>
-          <p className="text-sm text-text-dim">動画未収録</p>
+          <p className="text-sm text-text-dim">{translate("episodes.noVideo", lang)}</p>
           {d.archiveNotes && (
             <p className="text-xs text-text-dim mt-1 opacity-60">{d.archiveNotes}</p>
           )}
@@ -162,7 +165,7 @@ export default function EpisodeDetailPage() {
       {/* Summary */}
       {d.summaryJp && (
         <div className="mt-4">
-          <h2 className="text-sm font-bold text-primary mb-2">あらすじ</h2>
+          <h2 className="text-sm font-bold text-primary mb-2">{translate("episodes.synopsis", lang)}</h2>
           <p className="text-sm leading-relaxed text-foreground/80">{d.summaryJp}</p>
         </div>
       )}
@@ -175,17 +178,19 @@ export default function EpisodeDetailPage() {
           rel="noopener noreferrer"
           className="mt-4 inline-block text-xs underline text-text-dim hover:text-foreground"
         >
-          オリジナルソース →
+          {translate("episodes.originalSource", lang)}
         </a>
       )}
     </>
   );
 
+  const backLabel = translate("episodes.backToList", lang);
+
   return (
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen bg-background relative">
-        <StatusBar episodeCount={d.episodeNumber ?? 0} unitLabel="活動記録" />
+        <StatusBar episodeCount={d.episodeNumber ?? 0} unitLabel={translate("nav.episodes", lang)} />
         <main className="flex-1 px-3 pt-2 pb-20 overflow-y-auto">
           {content}
         </main>
@@ -202,7 +207,7 @@ export default function EpisodeDetailPage() {
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6 max-w-2xl mx-auto w-full">
           <Link href="/episodes" className="text-xs text-text-dim hover:underline">
-            ← 活動記録一覧
+            {backLabel}
           </Link>
           <div className="mt-3">{content}</div>
         </main>
@@ -212,7 +217,7 @@ export default function EpisodeDetailPage() {
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-4xl mx-auto w-full px-8 py-8">
           <Link href="/episodes" className="text-sm text-text-dim hover:underline">
-            ← 活動記録一覧
+            {backLabel}
           </Link>
           <div className="mt-4">{content}</div>
         </main>
