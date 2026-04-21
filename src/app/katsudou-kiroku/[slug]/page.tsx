@@ -97,7 +97,7 @@ export default function EpisodeDetailPage() {
           <p className="text-lg font-bold text-red-400">
             {error ? translate("common.error", lang) : translate("common.notFound", lang)}
           </p>
-          <Link href="/episodes" className="mt-4 inline-block text-sm underline text-primary">
+          <Link href="/katsudou-kiroku" className="mt-4 inline-block text-sm underline text-primary">
             {translate("episodes.backToList", lang)}
           </Link>
         </div>
@@ -210,7 +210,7 @@ export default function EpisodeDetailPage() {
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6 max-w-2xl mx-auto w-full">
-          <Link href="/episodes" className="text-xs text-text-dim hover:underline">
+          <Link href="/katsudou-kiroku" className="text-xs text-text-dim hover:underline">
             {backLabel}
           </Link>
           <div className="mt-3">{content}</div>
@@ -220,7 +220,7 @@ export default function EpisodeDetailPage() {
       {/* ===== DESKTOP ===== */}
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-4xl mx-auto w-full px-8 py-8">
-          <Link href="/episodes" className="text-sm text-text-dim hover:underline">
+          <Link href="/katsudou-kiroku" className="text-sm text-text-dim hover:underline">
             {backLabel}
           </Link>
           <div className="mt-4">{content}</div>

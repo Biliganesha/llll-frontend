@@ -74,7 +74,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
               />
 
               <ShortcutCard
-                href="/episodes"
+                href="/katsudou-kiroku"
                 title="活動記録"
                 subtitle="Episode Story"
                 description="Timeline real-calendar 蓮の空"

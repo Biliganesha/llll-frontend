@@ -7,7 +7,7 @@ import { translate } from "@/lib/translations";
 
 const NAV_ITEMS = [
   { href: "/", labelKey: "nav.home" as const },
-  { href: "/episodes", labelKey: "nav.episodes" as const },
+  { href: "/katsudou-kiroku", labelKey: "nav.episodes" as const },
   { href: "/sukukone", labelKey: "nav.sukukone" as const },
   { href: "/characters", labelKey: "nav.members" as const },
   { href: "/units", labelKey: "nav.units" as const },

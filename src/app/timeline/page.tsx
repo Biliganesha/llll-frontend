@@ -91,7 +91,7 @@ function buildTimeline(data: any): TimelineEvent[] {
       dateStr: formatDateFull(d),
       title: ep.title,
       type: "episode",
-      href: `/episodes/${ep.slug}`,
+      href: `/katsudou-kiroku/${ep.slug}`,
       color: "#8b82f5",
       meta: ep.episodeDetails.episodeNumber ? `#${ep.episodeDetails.episodeNumber}` : undefined,
     });

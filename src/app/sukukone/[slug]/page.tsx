@@ -260,7 +260,7 @@ export default function SukukoneDetailPage() {
     infoRows.push({
       label: translate("sukukone.relatedEp", lang),
       value: (
-        <Link href={`/episodes/${relatedEpisode.slug}`} className="hover:underline text-primary">
+        <Link href={`/katsudou-kiroku/${relatedEpisode.slug}`} className="hover:underline text-primary">
           {relatedEpisode.episodeDetails.episodeNumber
             ? `#${relatedEpisode.episodeDetails.episodeNumber} `
             : ""}

@@ -215,7 +215,7 @@ function EpisodeRow({
 
   return (
     <Link
-      href={`/episodes/${episode.slug}`}
+      href={`/katsudou-kiroku/${episode.slug}`}
       className="group flex items-start gap-3 p-3 rounded-xl transition-all duration-150 hover:shadow-md"
       style={{
         background: "var(--linkura-surface)",

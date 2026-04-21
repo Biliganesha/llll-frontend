@@ -115,7 +115,7 @@ function buildSearchIndex(data: any): SearchResult[] {
       id: ep.databaseId,
       title: ep.title,
       subtitle: [d.episodeNumber ? `#${d.episodeNumber}` : null, formatDate(d.releaseDate)].filter(Boolean).join(" · "),
-      href: `/episodes/${ep.slug}`,
+      href: `/katsudou-kiroku/${ep.slug}`,
       type: "episode",
       color: "#8b82f5",
     });

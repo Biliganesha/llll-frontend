@@ -109,7 +109,7 @@ function buildEvents(data: QueryData | undefined): CalendarEvent[] {
       title: ep.title,
       type: "episode",
       year: d.getFullYear(),
-      href: `/episodes/${ep.slug}`,
+      href: `/katsudou-kiroku/${ep.slug}`,
       color: "#8b82f5",
     });
   }
