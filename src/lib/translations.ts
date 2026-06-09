@@ -63,7 +63,7 @@ const dict = {
 
   // Calendar
   "calendar.title": { jp: "カレンダー", id: "Kalender" },
-  "calendar.today": { jp: "今日の蓮の空", id: "Hasunosora Hari Ini" },
+  "calendar.today": { jp: "今日の蓮ノ空", id: "Hasunosora Hari Ini" },
 
   // Timeline
   "timeline.title": { jp: "タイムライン", id: "Garis Waktu" },

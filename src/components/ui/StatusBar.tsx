@@ -14,7 +14,7 @@ type StatusBarProps = {
  */
 export function StatusBar({
   episodeCount = 0,
-  memberName = "蓮の空",
+  memberName = "蓮ノ空",
   unitLabel = "アーカイブ",
 }: StatusBarProps) {
   const [time, setTime] = useState<string>("");

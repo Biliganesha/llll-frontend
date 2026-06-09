@@ -8,6 +8,7 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import { useTr } from "@/lib/language";
 
 const GET_UNITS = gql`
   query GetUnits {
@@ -180,6 +181,7 @@ function UnitCard({ unit }: { unit: UnitNode }) {
 export default function UnitsPage() {
   const { data, loading } = useQuery<QueryData>(GET_UNITS);
   const router = useRouter();
+  const tr = useTr();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const units = data?.units.nodes ?? [];
@@ -187,7 +189,7 @@ export default function UnitsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-text-dim">読み込み中...</div>
+        <div className="animate-pulse text-text-dim">{tr("読み込み中...", "Memuat...")}</div>
       </div>
     );
   }
@@ -196,9 +198,9 @@ export default function UnitsPage() {
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen wallpaper-default relative">
-        <StatusBar episodeCount={units.length} unitLabel="ユニット" />
+        <StatusBar episodeCount={units.length} unitLabel={tr("ユニット", "Unit")} />
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">
-          <h1 className="text-xl font-bold brand-gradient-text mb-3">ユニット</h1>
+          <h1 className="text-xl font-bold brand-gradient-text mb-3">{tr("ユニット", "Unit")}</h1>
           <div className="space-y-4">
             {units.map((u) => (
               <UnitCard key={u.databaseId} unit={u} />
@@ -217,7 +219,7 @@ export default function UnitsPage() {
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6">
-          <h1 className="text-2xl font-bold brand-gradient-text mb-4">ユニット</h1>
+          <h1 className="text-2xl font-bold brand-gradient-text mb-4">{tr("ユニット", "Unit")}</h1>
           <div className="grid grid-cols-2 gap-4">
             {units.map((u) => (
               <UnitCard key={u.databaseId} unit={u} />
@@ -229,7 +231,7 @@ export default function UnitsPage() {
       {/* ===== DESKTOP ===== */}
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-5xl mx-auto w-full px-8 py-8">
-          <h1 className="text-3xl font-bold brand-gradient-text mb-6">ユニット</h1>
+          <h1 className="text-3xl font-bold brand-gradient-text mb-6">{tr("ユニット", "Unit")}</h1>
           <div className="grid grid-cols-2 gap-6">
             {units.map((u) => (
               <UnitCard key={u.databaseId} unit={u} />

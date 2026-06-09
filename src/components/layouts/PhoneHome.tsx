@@ -13,7 +13,7 @@ type Props = {
 
 /**
  * Phone layout — Linkura smartphone UI.
- * Widget 今日の蓮の空 diakses via notification bar di atas (tap pull handle).
+ * Widget 今日の蓮ノ空 diakses via notification bar di atas (tap pull handle).
  */
 export function PhoneHome({ menuOpen, setMenuOpen }: Props) {
   const router = useRouter();
@@ -31,7 +31,7 @@ export function PhoneHome({ menuOpen, setMenuOpen }: Props) {
               Link! Like!<br />Library! Legacy!
             </h1>
             <p className="text-[11px] text-[var(--linkura-text-dim)] mt-2 tracking-wider">
-              蓮の空アーカイブ
+              蓮ノ空アーカイブ
             </p>
           </div>
         </div>

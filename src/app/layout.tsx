@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ApolloWrapper } from "@/lib/ApolloWrapper";
 import { LanguageProvider } from "@/lib/language";
 import { NavBarWrapper } from "@/components/ui/NavBarWrapper";
+import { FirstVisitModal } from "@/components/ui/FirstVisitModal";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,13 +17,13 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = "https://llll-frontend.vercel.app";
-const siteName = "LLLL — 蓮の空アーカイブ";
+const siteName = "LLLL — 蓮ノ空アーカイブ";
 const siteDescription =
-  "Link! Like! Library! Legacy! — Arsip non-profit fan-made untuk story Love Live! Hasu no Sora (蓮の空). Melestarikan kenangan dari Link! Like! Love Live! (リンクラ) sebelum 30 Juni 2026.";
+  "Link! Like! Library! Legacy! — Arsip non-profit fan-made untuk story Love Live! Hasu no Sora (蓮ノ空). Melestarikan kenangan dari Link! Like! Love Live! (リンクラ) sebelum 30 Juni 2026.";
 
 export const metadata: Metadata = {
   title: {
-    default: "Link! Like! Library! Legacy! — 蓮の空アーカイブ",
+    default: "Link! Like! Library! Legacy! — 蓮ノ空アーカイブ",
     template: "%s | LLLL",
   },
   description: siteDescription,
@@ -57,6 +58,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <LanguageProvider>
+          <FirstVisitModal />
           <ApolloWrapper>
             <NavBarWrapper />
             {children}

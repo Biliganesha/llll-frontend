@@ -650,7 +650,7 @@ export default function RelationshipsPage() {
         <main className="max-w-5xl mx-auto w-full px-8 py-8">
           <h1 className="text-3xl font-bold brand-gradient-text">相関図</h1>
           <p className="text-sm text-text-dim mt-2 mb-5">
-            蓮の空メンバーの関係を視覚的に。ノードをクリックして詳細を表示。
+            蓮ノ空メンバーの関係を視覚的に。ノードをクリックして詳細を表示。
           </p>
 
           <div className="flex items-center justify-between mb-4">

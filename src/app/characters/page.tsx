@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/language";
 
 const GET_CHARACTERS_PAGE = gql`
   query GetCharactersPage {
@@ -35,6 +36,7 @@ const GET_CHARACTERS_PAGE = gql`
                 slug
                 unitDetails {
                   nameJp
+                  nameRomaji
                   colorPrimary
                 }
               }
@@ -50,6 +52,7 @@ const GET_CHARACTERS_PAGE = gql`
         slug
         unitDetails {
           nameJp
+          nameRomaji
           colorPrimary
         }
       }
@@ -72,7 +75,7 @@ type CharacterNode = {
       nodes: {
         title: string;
         slug: string;
-        unitDetails: { nameJp: string; colorPrimary: string | null };
+        unitDetails: { nameJp: string; nameRomaji: string; colorPrimary: string | null };
       }[];
     } | null;
   };
@@ -82,7 +85,7 @@ type UnitNode = {
   databaseId: number;
   title: string;
   slug: string;
-  unitDetails: { nameJp: string; colorPrimary: string | null };
+  unitDetails: { nameJp: string; nameRomaji: string; colorPrimary: string | null };
 };
 
 type PageData = {
@@ -95,6 +98,8 @@ export default function CharactersPage() {
   const [filterUnit, setFilterUnit] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
+  const { lang } = useLanguage();
+  const tr = (jp: string, id: string) => (lang === "jp" ? jp : id);
 
   const characters = data?.characters?.nodes ?? [];
   const units = data?.units?.nodes ?? [];
@@ -109,27 +114,27 @@ export default function CharactersPage() {
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen wallpaper-default relative">
-        <StatusBar episodeCount={characters.length} unitLabel="メンバー" />
+        <StatusBar episodeCount={characters.length} unitLabel={tr("メンバー", "Anggota")} />
 
         <main className="flex-1 px-3 pt-3 pb-20">
           <h1 className="text-xl font-bold brand-gradient-text mb-1">
-            メンバー
+            {tr("メンバー", "Anggota")}
           </h1>
           <p className="text-xs text-text-dim mb-3">
-            蓮の空女学院スクールアイドルクラブ
+            蓮ノ空女学院スクールアイドルクラブ
           </p>
 
           {/* Unit filter chips */}
           <div className="flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide">
             <FilterChip
-              label="全員"
+              label={tr("全員", "Semua")}
               active={!filterUnit}
               onClick={() => setFilterUnit(null)}
             />
             {units.map((u) => (
               <FilterChip
                 key={u.slug}
-                label={u.unitDetails.nameJp}
+                label={tr(u.unitDetails.nameJp, u.unitDetails.nameRomaji)}
                 color={u.unitDetails.colorPrimary}
                 active={filterUnit === u.slug}
                 onClick={() => setFilterUnit(u.slug)}
@@ -153,6 +158,7 @@ export default function CharactersPage() {
                   generation={c.characterDetails.generation?.[0] ?? null}
                   seiyuu={c.characterDetails.seiyuu}
                   unitName={c.characterDetails.unit?.nodes[0]?.unitDetails.nameJp ?? null}
+                  unitNameRomaji={c.characterDetails.unit?.nodes[0]?.unitDetails.nameRomaji ?? null}
                   unitColor={c.characterDetails.unit?.nodes[0]?.unitDetails.colorPrimary ?? null}
                   imageUrl={c.characterDetails.imageMain?.node.sourceUrl ?? null}
                   variant="compact"
@@ -174,21 +180,21 @@ export default function CharactersPage() {
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <header className="px-6 pt-6 pb-4">
-          <h1 className="text-2xl font-bold brand-gradient-text">メンバー</h1>
+          <h1 className="text-2xl font-bold brand-gradient-text">{tr("メンバー", "Anggota")}</h1>
           <p className="text-sm text-text-dim mt-1">
-            蓮の空女学院スクールアイドルクラブ
+            蓮ノ空女学院スクールアイドルクラブ
           </p>
 
           <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
             <FilterChip
-              label="全員"
+              label={tr("全員", "Semua")}
               active={!filterUnit}
               onClick={() => setFilterUnit(null)}
             />
             {units.map((u) => (
               <FilterChip
                 key={u.slug}
-                label={u.unitDetails.nameJp}
+                label={tr(u.unitDetails.nameJp, u.unitDetails.nameRomaji)}
                 color={u.unitDetails.colorPrimary}
                 active={filterUnit === u.slug}
                 onClick={() => setFilterUnit(u.slug)}
@@ -214,6 +220,7 @@ export default function CharactersPage() {
                   generation={c.characterDetails.generation?.[0] ?? null}
                   seiyuu={c.characterDetails.seiyuu}
                   unitName={c.characterDetails.unit?.nodes[0]?.unitDetails.nameJp ?? null}
+                  unitNameRomaji={c.characterDetails.unit?.nodes[0]?.unitDetails.nameRomaji ?? null}
                   unitColor={c.characterDetails.unit?.nodes[0]?.unitDetails.colorPrimary ?? null}
                   imageUrl={c.characterDetails.imageMain?.node.sourceUrl ?? null}
                 />
@@ -229,23 +236,23 @@ export default function CharactersPage() {
           <div className="flex items-end justify-between">
             <div>
               <h1 className="text-3xl font-bold brand-gradient-text">
-                メンバー
+                {tr("メンバー", "Anggota")}
               </h1>
               <p className="text-sm text-text-dim mt-1">
-                蓮の空女学院スクールアイドルクラブ — {characters.length}人
+                蓮ノ空女学院スクールアイドルクラブ{tr(` — ${characters.length}人`, ` — ${characters.length} anggota`)}
               </p>
             </div>
 
             <div className="flex gap-2">
               <FilterChip
-                label="全員"
+                label={tr("全員", "Semua")}
                 active={!filterUnit}
                 onClick={() => setFilterUnit(null)}
               />
               {units.map((u) => (
                 <FilterChip
                   key={u.slug}
-                  label={u.unitDetails.nameJp}
+                  label={tr(u.unitDetails.nameJp, u.unitDetails.nameRomaji)}
                   color={u.unitDetails.colorPrimary}
                   active={filterUnit === u.slug}
                   onClick={() => setFilterUnit(u.slug)}
@@ -272,6 +279,7 @@ export default function CharactersPage() {
                   generation={c.characterDetails.generation?.[0] ?? null}
                   seiyuu={c.characterDetails.seiyuu}
                   unitName={c.characterDetails.unit?.nodes[0]?.unitDetails.nameJp ?? null}
+                  unitNameRomaji={c.characterDetails.unit?.nodes[0]?.unitDetails.nameRomaji ?? null}
                   unitColor={c.characterDetails.unit?.nodes[0]?.unitDetails.colorPrimary ?? null}
                   imageUrl={c.characterDetails.imageMain?.node.sourceUrl ?? null}
                 />

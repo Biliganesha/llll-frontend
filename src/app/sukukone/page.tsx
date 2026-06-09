@@ -9,6 +9,7 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/lib/language";
 
 const GET_SUKUKONE = gql`
   query GetSukukoneVideos {
@@ -43,8 +44,15 @@ const GET_SUKUKONE = gql`
             nodes {
               ... on Unit {
                 title
+                slug
                 unitDetails {
                   colorPrimary
+                  logo {
+                    node {
+                      sourceUrl
+                      altText
+                    }
+                  }
                 }
               }
             }
@@ -54,6 +62,15 @@ const GET_SUKUKONE = gql`
     }
   }
 `;
+
+type UnitNode = {
+  title: string;
+  slug: string | null;
+  unitDetails: {
+    colorPrimary: string | null;
+    logo: { node: { sourceUrl: string; altText: string } } | null;
+  };
+};
 
 type SukukoneNode = {
   databaseId: number;
@@ -69,40 +86,42 @@ type SukukoneNode = {
     hasSubtitleId: boolean | null;
     thumbnail: { node: { sourceUrl: string; altText: string } } | null;
     performers: { nodes: { title: string; slug: string }[] } | null;
-    unit: {
-      nodes: {
-        title: string;
-        unitDetails: { colorPrimary: string | null };
-      }[];
-    } | null;
+    unit: { nodes: UnitNode[] } | null;
   };
 };
 
 type QueryData = { sukukoneVideos: { nodes: SukukoneNode[] } };
 
-type TabId = "upcoming" | "archives" | "wxstation" | "mv" | "channel" | "ranking";
+type TabId = "upcoming" | "memorize" | "archives" | "wxstation" | "mv" | "channel" | "ranking";
 
-const TABS: { id: TabId; label: string; disabled: boolean; disabledMsg?: string }[] = [
+const TABS: { id: TabId; label: string; emptyMsg?: { jp: string; id: string } }[] = [
   {
     id: "upcoming",
     label: "UPCOMING",
-    disabled: true,
-    disabledMsg: "Layanan Linkura telah berakhir — jadwal broadcast tidak tersedia lagi.",
+    emptyMsg: {
+      jp: "現在予定されている配信はありません。",
+      id: "Belum ada siaran yang dijadwalkan saat ini.",
+    },
   },
-  { id: "archives", label: "ARCHIVES", disabled: false },
-  { id: "wxstation", label: "WxSTATION", disabled: false },
-  { id: "mv", label: "MUSIC VIDEO", disabled: false },
-  { id: "channel", label: "CHANNEL", disabled: false },
+  { id: "memorize", label: "WithxMEMORIES" },
+  { id: "archives", label: "ARCHIVES" },
+  { id: "wxstation", label: "WxSTATION" },
+  { id: "mv", label: "MUSIC VIDEO" },
+  { id: "channel", label: "CHANNEL" },
   {
     id: "ranking",
     label: "RANKING",
-    disabled: true,
-    disabledMsg: "Kompetisi ranking sudah tidak berjalan sejak layanan berakhir.",
+    emptyMsg: {
+      jp: "現在予定されているランキングはありません。",
+      id: "Belum ada ranking yang dijadwalkan saat ini.",
+    },
   },
 ];
 
+type UnitInfo = { title: string; slug: string | null; color: string; logo: string | null };
+
 function filterByTab(videos: SukukoneNode[], tab: TabId): SukukoneNode[] {
-  if (tab === "channel") return videos; // channel view groups all videos by unit
+  if (tab === "channel") return videos;
   return videos.filter((v) => {
     const type = v.sukukoneVideoDetails.tabType?.[0];
     switch (tab) {
@@ -118,22 +137,49 @@ function filterByTab(videos: SukukoneNode[], tab: TabId): SukukoneNode[] {
   });
 }
 
-function groupByUnit(videos: SukukoneNode[]): { unitName: string; unitColor: string; unitSlug: string | null; videos: SukukoneNode[] }[] {
-  const groups: Record<string, { unitName: string; unitColor: string; unitSlug: string | null; videos: SukukoneNode[] }> = {};
+function unitOf(v: SukukoneNode): UnitNode | undefined {
+  return v.sukukoneVideoDetails.unit?.nodes[0];
+}
+
+function collectUnits(videos: SukukoneNode[]): UnitInfo[] {
+  const map = new Map<string, UnitInfo>();
   for (const v of videos) {
-    const unit = v.sukukoneVideoDetails.unit?.nodes[0];
-    const key = unit?.title || "その他";
-    if (!groups[key]) {
-      groups[key] = {
-        unitName: unit?.title || "その他",
-        unitColor: unit?.unitDetails.colorPrimary || "var(--linkura-primary)",
-        unitSlug: null,
-        videos: [],
-      };
-    }
-    groups[key].videos.push(v);
+    const u = unitOf(v);
+    if (!u || map.has(u.title)) continue;
+    map.set(u.title, {
+      title: u.title,
+      slug: u.slug ?? null,
+      color: u.unitDetails.colorPrimary || "var(--linkura-primary)",
+      logo: u.unitDetails.logo?.node.sourceUrl ?? null,
+    });
   }
-  return Object.values(groups);
+  return [...map.values()];
+}
+
+function collectPerformers(videos: SukukoneNode[]): { title: string; slug: string }[] {
+  const map = new Map<string, { title: string; slug: string }>();
+  for (const v of videos) {
+    for (const p of v.sukukoneVideoDetails.performers?.nodes ?? []) {
+      if (!map.has(p.slug)) map.set(p.slug, p);
+    }
+  }
+  return [...map.values()];
+}
+
+function applyFilters(
+  videos: SukukoneNode[],
+  filterUnit: string | null,
+  filterPerformer: string | null
+): SukukoneNode[] {
+  return videos.filter((v) => {
+    if (filterUnit && unitOf(v)?.title !== filterUnit) return false;
+    if (
+      filterPerformer &&
+      !(v.sukukoneVideoDetails.performers?.nodes ?? []).some((p) => p.slug === filterPerformer)
+    )
+      return false;
+    return true;
+  });
 }
 
 function formatDate(iso: string | null): string {
@@ -149,6 +195,21 @@ function formatDuration(seconds: number | null): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+const MEMORIZE_WINDOW_DAYS = 10;
+
+/** Jarak (hari) tanggal video dari hari ini, lintas tahun (poin 11 — WithxMEMORIES). */
+function dayDistanceFromToday(iso: string | null): number | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const thisYearOccur = new Date(now.getFullYear(), d.getMonth(), d.getDate());
+  const diff = Math.round((thisYearOccur.getTime() - todayMidnight.getTime()) / 86400000);
+  const abs = Math.abs(diff);
+  return Math.min(abs, 365 - abs);
+}
+
 function tabTypeLabel(type: string | undefined): string {
   switch (type) {
     case "with_meets": return "WithxMEETS";
@@ -162,22 +223,20 @@ function tabTypeLabel(type: string | undefined): string {
 export default function SukukonePage() {
   const { data, loading, error } = useQuery<QueryData>(GET_SUKUKONE);
   const [activeTab, setActiveTab] = useState<TabId>("archives");
-  const [disabledTooltip, setDisabledTooltip] = useState<string | null>(null);
+  const [selectedChannel, setSelectedChannel] = useState<string>("all");
+  const [filterUnit, setFilterUnit] = useState<string | null>(null);
+  const [filterPerformer, setFilterPerformer] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
+  const { lang } = useLanguage();
+  const tr = (jp: string, id: string) => (lang === "jp" ? jp : id);
 
   const videos = data?.sukukoneVideos?.nodes ?? [];
-  const filtered = filterByTab(videos, activeTab);
-  const activeTabConfig = TABS.find((t) => t.id === activeTab)!;
 
-  const handleTabClick = (tab: typeof TABS[number]) => {
-    if (tab.disabled) {
-      setDisabledTooltip(tab.disabledMsg || null);
-      setTimeout(() => setDisabledTooltip(null), 3000);
-    } else {
-      setActiveTab(tab.id);
-      setDisabledTooltip(null);
-    }
+  const handleTabClick = (id: TabId) => {
+    setActiveTab(id);
+    setFilterUnit(null);
+    setFilterPerformer(null);
   };
 
   const tabBar = (
@@ -185,82 +244,190 @@ export default function SukukonePage() {
       {TABS.map((tab) => (
         <button
           key={tab.id}
-          onClick={() => handleTabClick(tab)}
+          onClick={() => handleTabClick(tab.id)}
           className={`shrink-0 px-4 py-2.5 text-xs font-bold tracking-wide transition-all duration-150 border-b-2 cursor-pointer ${
-            tab.disabled
-              ? "text-text-dim/40 border-transparent cursor-not-allowed"
-              : activeTab === tab.id
-                ? "text-primary border-primary"
-                : "text-text-dim border-transparent hover:text-foreground hover:border-border"
+            activeTab === tab.id
+              ? "text-primary border-primary"
+              : "text-text-dim border-transparent hover:text-foreground hover:border-border"
           }`}
         >
-          {tab.disabled && <span className="mr-1">🔒</span>}
           {tab.label}
         </button>
       ))}
     </div>
   );
 
-  const disabledBanner = disabledTooltip && (
-    <div className="mx-3 mt-2 p-3 rounded-xl bg-surface-2 border border-border text-xs text-text-dim animate-in fade-in">
-      🏁 {disabledTooltip}
+  // ── Channel selector (poin 9 — gaya YouTube Subscriptions) ──
+  const channelUnits = collectUnits(videos);
+  const channelSelector = (
+    <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 mb-4 border-b border-border">
+      <ChannelChip
+        label={tr("すべて", "Semua")}
+        emoji="🎬"
+        active={selectedChannel === "all"}
+        onClick={() => setSelectedChannel("all")}
+      />
+      {channelUnits.map((u) => (
+        <ChannelChip
+          key={u.title}
+          label={u.title}
+          color={u.color}
+          logo={u.logo}
+          active={selectedChannel === u.title}
+          onClick={() => setSelectedChannel(u.title)}
+        />
+      ))}
     </div>
   );
 
-  const unitGroups = activeTab === "channel" ? groupByUnit(filtered) : [];
+  const channelVideos =
+    selectedChannel === "all"
+      ? videos
+      : videos.filter((v) => unitOf(v)?.title === selectedChannel);
 
-  const channelView = (variant: "list" | "card", cols?: number) => (
-    <div className="space-y-6">
-      {unitGroups.map((group) => (
-        <div key={group.unitName}>
-          <div className="flex items-center gap-2 mb-3">
-            <span
-              className="w-3 h-3 rounded-full"
-              style={{ background: group.unitColor }}
-            />
-            <h3 className="text-sm font-bold" style={{ color: group.unitColor }}>
-              {group.unitName}
-            </h3>
-            <span className="text-[11px] text-text-dim">({group.videos.length})</span>
+  // ── WithxMEMORIES: video yang dulu tayang di sekitar tanggal hari ini (poin 11) ──
+  const memorizeVideos = videos
+    .map((v) => ({ v, dist: dayDistanceFromToday(v.sukukoneVideoDetails.airDate) }))
+    .filter((x) => x.dist !== null && x.dist <= MEMORIZE_WINDOW_DAYS)
+    .sort((a, b) => (a.dist ?? 0) - (b.dist ?? 0))
+    .map((x) => x.v);
+
+  // ── Filter bar untuk tab konten (poin 10) ──
+  const filterBar = (tabVids: SukukoneNode[]) => {
+    const units = collectUnits(tabVids);
+    const performers = collectPerformers(tabVids);
+    if (units.length === 0 && performers.length === 0) return null;
+    return (
+      <div className="space-y-2 mb-4">
+        {units.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+            <FilterChip label={tr("全ユニット", "Semua Unit")} active={!filterUnit} onClick={() => setFilterUnit(null)} />
+            {units.map((u) => (
+              <FilterChip
+                key={u.title}
+                label={u.title}
+                color={u.color}
+                active={filterUnit === u.title}
+                onClick={() => setFilterUnit(filterUnit === u.title ? null : u.title)}
+              />
+            ))}
           </div>
-          {variant === "list" ? (
-            <div className="space-y-3">
-              {group.videos.map((v) => (
-                <VideoCard key={v.databaseId} video={v} />
-              ))}
-            </div>
-          ) : (
-            <div className={`grid gap-4 ${cols === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
-              {group.videos.map((v) => (
-                <VideoCard key={v.databaseId} video={v} card />
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
+        )}
+        {performers.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+            <FilterChip label={tr("全メンバー", "Semua Anggota")} active={!filterPerformer} onClick={() => setFilterPerformer(null)} small />
+            {performers.map((p) => (
+              <FilterChip
+                key={p.slug}
+                label={p.title}
+                active={filterPerformer === p.slug}
+                onClick={() => setFilterPerformer(filterPerformer === p.slug ? null : p.slug)}
+                small
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
-  const videoList = loading ? (
-    <VideoListSkeleton />
-  ) : error ? (
-    <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
-      <p className="font-medium">データ取得エラー</p>
-      <p className="mt-1 text-xs opacity-70">{error.message}</p>
-    </div>
-  ) : filtered.length === 0 ? (
-    <div className="py-12 text-center text-text-dim text-sm">
-      {activeTabConfig.label}のコンテンツはまだありません
-    </div>
-  ) : activeTab === "channel" ? (
-    channelView("list")
-  ) : (
-    <div className="space-y-3">
-      {filtered.map((v) => (
-        <VideoCard key={v.databaseId} video={v} />
-      ))}
-    </div>
-  );
+  const grid = (list: SukukoneNode[], variant: "list" | "card", cols: 2 | 3) =>
+    variant === "list" ? (
+      <div className="space-y-3">
+        {list.map((v) => (
+          <VideoCard key={v.databaseId} video={v} />
+        ))}
+      </div>
+    ) : (
+      <div className={`grid gap-4 ${cols === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+        {list.map((v) => (
+          <VideoCard key={v.databaseId} video={v} card />
+        ))}
+      </div>
+    );
+
+  const renderBody = (variant: "list" | "card", cols: 2 | 3) => {
+    if (loading) {
+      return variant === "list" ? (
+        <div className="space-y-3"><VideoListSkeleton /></div>
+      ) : (
+        <div className={`grid gap-4 ${cols === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+          <VideoListSkeleton grid />
+        </div>
+      );
+    }
+    if (error) {
+      return (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+          <p className="font-medium">{tr("データ取得エラー", "Gagal mengambil data")}</p>
+          <p className="mt-1 text-xs opacity-70">{error.message}</p>
+        </div>
+      );
+    }
+
+    const cfg = TABS.find((t) => t.id === activeTab)!;
+
+    // Upcoming / Ranking — jendela sendiri dengan pesan (poin 7 & 8)
+    if (cfg.emptyMsg) return <EmptyState message={tr(cfg.emptyMsg.jp, cfg.emptyMsg.id)} />;
+
+    // WithxMEMORIES — video yang dulu tayang dekat tanggal hari ini (poin 11)
+    if (activeTab === "memorize") {
+      const today = new Date();
+      const tm = today.getMonth() + 1;
+      const td = today.getDate();
+      return (
+        <>
+          <p className="text-xs text-text-dim mb-4 flex items-center gap-1.5">
+            <span aria-hidden>🕯️</span>
+            {tr(
+              `今日（${tm}月${td}日）前後に配信された思い出のスクコネ`,
+              `Kenangan SukuKone yang pernah tayang sekitar hari ini (${tm}/${td})`
+            )}
+          </p>
+          {memorizeVideos.length === 0 ? (
+            <EmptyState
+              message={tr(
+                "今日の前後に配信された思い出はまだありません。",
+                "Belum ada kenangan yang tayang di sekitar hari ini."
+              )}
+            />
+          ) : (
+            grid(memorizeVideos, variant, cols)
+          )}
+        </>
+      );
+    }
+
+    // Channel — selector logo + video channel terpilih (poin 9)
+    if (activeTab === "channel") {
+      return (
+        <>
+          {channelSelector}
+          {channelVideos.length === 0 ? (
+            <NoContent message={tr("CHANNELのコンテンツはまだありません", "Belum ada konten CHANNEL")} />
+          ) : (
+            grid(channelVideos, variant, cols)
+          )}
+        </>
+      );
+    }
+
+    // Tab konten — filter + grid (poin 10)
+    const tabVids = filterByTab(videos, activeTab);
+    const filtered = applyFilters(tabVids, filterUnit, filterPerformer);
+    return (
+      <>
+        {filterBar(tabVids)}
+        {filtered.length === 0 ? (
+          <NoContent
+            message={tr(`${cfg.label}のコンテンツはまだありません`, `Belum ada konten ${cfg.label}`)}
+          />
+        ) : (
+          grid(filtered, variant, cols)
+        )}
+      </>
+    );
+  };
 
   return (
     <>
@@ -270,15 +437,14 @@ export default function SukukonePage() {
 
         <header className="px-3 pt-3">
           <h1 className="text-lg font-bold brand-gradient-text">
-            スクールアイドルコネクト
+            {tr("スクールアイドルコネクト", "School Idol Connect")}
           </h1>
         </header>
 
         {tabBar}
-        {disabledBanner}
 
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">
-          {videoList}
+          {renderBody("list", 2)}
         </main>
 
         <BottomNav
@@ -294,29 +460,14 @@ export default function SukukonePage() {
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <header className="px-6 pt-6 pb-2">
           <h1 className="text-2xl font-bold brand-gradient-text">
-            スクールアイドルコネクト
+            {tr("スクールアイドルコネクト", "School Idol Connect")}
           </h1>
         </header>
 
         {tabBar}
-        {disabledBanner}
 
         <main className="flex-1 px-6 pt-4 pb-6 overflow-y-auto">
-          {loading ? (
-            <div className="grid grid-cols-2 gap-4">
-              <VideoListSkeleton grid />
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="py-12 text-center text-text-dim text-sm">
-              {activeTabConfig.label}のコンテンツはまだありません
-            </div>
-          ) : activeTab === "channel" ? (
-            channelView("card")
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {filtered.map((v) => <VideoCard key={v.databaseId} video={v} card />)}
-            </div>
-          )}
+          {renderBody("card", 2)}
         </main>
       </div>
 
@@ -324,31 +475,14 @@ export default function SukukonePage() {
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <header className="max-w-5xl mx-auto w-full px-8 pt-8 pb-2">
           <h1 className="text-3xl font-bold brand-gradient-text">
-            スクールアイドルコネクト
+            {tr("スクールアイドルコネクト", "School Idol Connect")}
           </h1>
         </header>
 
-        <div className="max-w-5xl mx-auto w-full px-8">
-          {tabBar}
-          {disabledBanner}
-        </div>
+        <div className="max-w-5xl mx-auto w-full px-8">{tabBar}</div>
 
         <main className="max-w-5xl mx-auto w-full px-8 pt-4 pb-8 flex-1">
-          {loading ? (
-            <div className="grid grid-cols-3 gap-5">
-              <VideoListSkeleton grid />
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="py-12 text-center text-text-dim text-sm">
-              {activeTabConfig.label}のコンテンツはまだありません
-            </div>
-          ) : activeTab === "channel" ? (
-            channelView("card", 3)
-          ) : (
-            <div className="grid grid-cols-3 gap-5">
-              {filtered.map((v) => <VideoCard key={v.databaseId} video={v} card />)}
-            </div>
-          )}
+          {renderBody("card", 3)}
         </main>
       </div>
     </>
@@ -356,6 +490,99 @@ export default function SukukonePage() {
 }
 
 /* ── Sub-components ── */
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-16 h-16 rounded-2xl bg-surface-2 flex items-center justify-center text-3xl mb-4">
+        📭
+      </div>
+      <p className="text-sm text-text-dim max-w-xs leading-relaxed">{message}</p>
+    </div>
+  );
+}
+
+function NoContent({ message }: { message: string }) {
+  return (
+    <div className="py-12 text-center text-text-dim text-sm">
+      {message}
+    </div>
+  );
+}
+
+function ChannelChip({
+  label,
+  color,
+  logo,
+  emoji,
+  active,
+  onClick,
+}: {
+  label: string;
+  color?: string;
+  logo?: string | null;
+  emoji?: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button onClick={onClick} className="shrink-0 flex flex-col items-center gap-1.5 w-16 cursor-pointer">
+      <div
+        className={`w-14 h-14 rounded-full overflow-hidden flex items-center justify-center ring-2 transition ${
+          active ? "ring-primary scale-105" : "ring-transparent hover:ring-border"
+        }`}
+        style={{ background: color ? `${color}20` : "var(--linkura-surface-2)" }}
+      >
+        {logo ? (
+          <Image src={logo} alt={label} width={56} height={56} className="object-cover w-full h-full" />
+        ) : emoji ? (
+          <span className="text-2xl" aria-hidden>{emoji}</span>
+        ) : (
+          <span className="text-lg font-bold" style={{ color }}>
+            {label.charAt(0)}
+          </span>
+        )}
+      </div>
+      <span
+        className={`text-[10px] text-center leading-tight line-clamp-2 ${
+          active ? "text-primary font-bold" : "text-text-dim"
+        }`}
+      >
+        {label}
+      </span>
+    </button>
+  );
+}
+
+function FilterChip({
+  label,
+  color,
+  active,
+  onClick,
+  small,
+}: {
+  label: string;
+  color?: string;
+  active: boolean;
+  onClick: () => void;
+  small?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`shrink-0 rounded-full font-medium transition cursor-pointer border ${
+        small ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"
+      } ${
+        active
+          ? "text-white border-transparent"
+          : "text-text-dim border-border hover:border-primary/40 hover:text-foreground bg-white"
+      }`}
+      style={active ? { background: color || "var(--linkura-primary)" } : undefined}
+    >
+      {label}
+    </button>
+  );
+}
 
 function VideoCard({
   video,
@@ -365,7 +592,7 @@ function VideoCard({
   card?: boolean;
 }) {
   const d = video.sukukoneVideoDetails;
-  const unitColor = d.unit?.nodes[0]?.unitDetails.colorPrimary || "var(--linkura-primary)";
+  const unitColor = unitOf(video)?.unitDetails.colorPrimary || "var(--linkura-primary)";
   const type = d.tabType?.[0];
   const thumbUrl = d.thumbnail?.node.sourceUrl;
 
@@ -376,7 +603,6 @@ function VideoCard({
         className="group block rounded-xl overflow-hidden transition-all hover:shadow-lg"
         style={{ background: "var(--linkura-surface)", border: "1px solid var(--linkura-border)" }}
       >
-        {/* Thumbnail */}
         <div className="relative aspect-video" style={{ background: `${unitColor}15` }}>
           {thumbUrl ? (
             <Image src={thumbUrl} alt={video.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
@@ -392,7 +618,6 @@ function VideoCard({
             </div>
           )}
 
-          {/* Type badge */}
           <span
             className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold text-white"
             style={{ background: unitColor }}
@@ -419,14 +644,12 @@ function VideoCard({
     );
   }
 
-  // List variant (phone)
   return (
     <Link
       href={`/sukukone/${video.slug}`}
       className="group flex gap-3 p-2 rounded-xl transition-all hover:shadow-md"
       style={{ background: "var(--linkura-surface)", border: "1px solid var(--linkura-border)" }}
     >
-      {/* Thumbnail */}
       <div className="relative w-32 shrink-0 aspect-video rounded-lg overflow-hidden" style={{ background: `${unitColor}15` }}>
         {thumbUrl ? (
           <Image src={thumbUrl} alt={video.title} fill sizes="128px" className="object-cover" />

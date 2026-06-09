@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/lib/language";
 
 type CharacterCardProps = {
   slug: string;
@@ -11,6 +12,7 @@ type CharacterCardProps = {
   generation: string | null;
   seiyuu: string | null;
   unitName: string | null;
+  unitNameRomaji?: string | null;
   unitColor: string | null;
   imageUrl: string | null;
   variant?: "compact" | "default";
@@ -24,11 +26,17 @@ export function CharacterCard({
   generation,
   seiyuu,
   unitName,
+  unitNameRomaji,
   unitColor,
   imageUrl,
   variant = "default",
 }: CharacterCardProps) {
+  const { lang } = useLanguage();
   const color = colorTheme || "#8b82f5";
+  // JP → kanji utama; ID → romaji utama (nama panggilan/baca sebagai sekunder)
+  const primaryName = lang === "jp" ? nameJp : nameRomaji || nameJp;
+  const secondaryName = lang === "jp" ? nameRomaji : nameJp;
+  const unitDisplay = lang === "jp" ? unitName : unitNameRomaji || unitName;
 
   return (
     <Link
@@ -61,12 +69,12 @@ export function CharacterCard({
         )}
 
         {/* Unit badge */}
-        {unitName && (
+        {unitDisplay && (
           <div
             className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm"
             style={{ background: unitColor || color }}
           >
-            {unitName}
+            {unitDisplay}
           </div>
         )}
       </div>
@@ -77,13 +85,13 @@ export function CharacterCard({
           className="font-bold text-base leading-tight"
           style={{ color }}
         >
-          {nameJp}
+          {primaryName}
         </h3>
-        <p className="text-xs text-text-dim mt-0.5">{nameRomaji}</p>
+        <p className="text-xs text-text-dim mt-0.5">{secondaryName}</p>
 
         {variant === "default" && (
           <div className="flex items-center gap-2 mt-2 text-[11px] text-text-dim">
-            {generation && <span>{generation}期生</span>}
+            {generation && <span>{lang === "jp" ? `${generation}期生` : `Angkatan ${generation}`}</span>}
             {seiyuu && (
               <>
                 <span className="opacity-30">|</span>

@@ -57,3 +57,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 export function useLanguage() {
   return useContext(LanguageContext);
 }
+
+/** Helper ringkas: kembalikan fungsi `tr(jp, id)` yang memilih string sesuai bahasa aktif. */
+export function useTr() {
+  const { lang } = useContext(LanguageContext);
+  return (jp: string, id: string): string => (lang === "id" ? id : jp);
+}

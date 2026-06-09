@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTr } from "@/lib/language";
 
 const GET_CALENDAR_DATA = gql`
   query GetCalendarData {
@@ -109,7 +110,7 @@ function buildEvents(data: QueryData | undefined): CalendarEvent[] {
       title: ep.title,
       type: "episode",
       year: d.getFullYear(),
-      href: `/katsudou-kiroku/${ep.slug}`,
+      href: `/katsudou-kiroku/ep/${ep.slug}`,
       color: "#8b82f5",
     });
   }
@@ -150,6 +151,7 @@ function buildEvents(data: QueryData | undefined): CalendarEvent[] {
 export default function CalendarPage() {
   const { data, loading } = useQuery<QueryData>(GET_CALENDAR_DATA);
   const router = useRouter();
+  const tr = useTr();
 
   const today = new Date();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -158,7 +160,7 @@ export default function CalendarPage() {
 
   const allEvents = useMemo(() => buildEvents(data), [data]);
 
-  // "Hari ini di 蓮の空" — events that match today's month/day across all years
+  // "Hari ini di 蓮ノ空" — events that match today's month/day across all years
   const todayMD = `${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const todayEvents = allEvents.filter((e) => e.monthDay === todayMD);
 
@@ -199,7 +201,10 @@ export default function CalendarPage() {
   const todayWidget = todayEvents.length > 0 && (
     <div className="rounded-xl p-4 mb-4" style={{ background: "linear-gradient(135deg, #fff0f5, #f0eaff)" }}>
       <h2 className="text-sm font-bold brand-gradient-text mb-2">
-        今日の蓮の空 — {today.getMonth() + 1}月{today.getDate()}日
+        {tr(
+          `今日の蓮ノ空 — ${today.getMonth() + 1}月${today.getDate()}日`,
+          `Hari Ini di 蓮ノ空 — ${today.getMonth() + 1}/${today.getDate()}`
+        )}
       </h2>
       <div className="space-y-1.5">
         {todayEvents.map((e, i) => (
@@ -315,9 +320,9 @@ export default function CalendarPage() {
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen wallpaper-default relative">
-        <StatusBar episodeCount={0} unitLabel="カレンダー" />
+        <StatusBar episodeCount={0} unitLabel={tr("カレンダー", "Kalender")} />
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">
-          <h1 className="text-xl font-bold brand-gradient-text mb-3">カレンダー</h1>
+          <h1 className="text-xl font-bold brand-gradient-text mb-3">{tr("カレンダー", "Kalender")}</h1>
           {todayWidget}
           {calendarGrid}
           {eventsList}
@@ -334,7 +339,7 @@ export default function CalendarPage() {
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6">
-          <h1 className="text-2xl font-bold brand-gradient-text mb-4">カレンダー</h1>
+          <h1 className="text-2xl font-bold brand-gradient-text mb-4">{tr("カレンダー", "Kalender")}</h1>
           {todayWidget}
           <div className="flex gap-6">
             <div className="flex-1">{calendarGrid}</div>
@@ -346,7 +351,7 @@ export default function CalendarPage() {
       {/* ===== DESKTOP ===== */}
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-5xl mx-auto w-full px-8 py-8">
-          <h1 className="text-3xl font-bold brand-gradient-text mb-4">カレンダー</h1>
+          <h1 className="text-3xl font-bold brand-gradient-text mb-4">{tr("カレンダー", "Kalender")}</h1>
           {todayWidget}
           <div className="flex gap-8">
             <div className="flex-1">{calendarGrid}</div>

@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTr } from "@/lib/language";
 
 const GET_TIMELINE_DATA = gql`
   query GetTimelineData {
@@ -91,7 +92,7 @@ function buildTimeline(data: any): TimelineEvent[] {
       dateStr: formatDateFull(d),
       title: ep.title,
       type: "episode",
-      href: `/katsudou-kiroku/${ep.slug}`,
+      href: `/katsudou-kiroku/ep/${ep.slug}`,
       color: "#8b82f5",
       meta: ep.episodeDetails.episodeNumber ? `#${ep.episodeDetails.episodeNumber}` : undefined,
     });
@@ -148,16 +149,17 @@ function formatMonthYear(d: Date): string {
 
 type TypeFilter = "all" | "episode" | "sukukone" | "birthday";
 
-const TYPE_FILTERS: { id: TypeFilter; label: string; color: string }[] = [
-  { id: "all", label: "すべて", color: "#8b82f5" },
-  { id: "episode", label: "活動記録", color: "#8b82f5" },
-  { id: "sukukone", label: "スクコネ", color: "#ef5a8f" },
-  { id: "birthday", label: "誕生日", color: "#ffb74d" },
+const TYPE_FILTERS: { id: TypeFilter; label: string; labelId: string; color: string }[] = [
+  { id: "all", label: "すべて", labelId: "Semua", color: "#8b82f5" },
+  { id: "episode", label: "活動記録", labelId: "Catatan Aktivitas", color: "#8b82f5" },
+  { id: "sukukone", label: "スクコネ", labelId: "SukuKone", color: "#ef5a8f" },
+  { id: "birthday", label: "誕生日", labelId: "Ulang Tahun", color: "#ffb74d" },
 ];
 
 export default function TimelinePage() {
   const { data, loading } = useQuery(GET_TIMELINE_DATA);
   const router = useRouter();
+  const tr = useTr();
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<TypeFilter>("all");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -208,7 +210,7 @@ export default function TimelinePage() {
             }`}
             style={filter === f.id ? { background: f.color } : undefined}
           >
-            {f.label} ({count})
+            {tr(f.label, f.labelId)} ({count})
           </button>
         );
       })}
@@ -247,7 +249,7 @@ export default function TimelinePage() {
   ) : filtered.length === 0 ? (
     <div className="mt-8 text-center">
       <span className="text-4xl">🕰️</span>
-      <p className="text-sm text-text-dim mt-3">タイムラインにイベントがありません</p>
+      <p className="text-sm text-text-dim mt-3">{tr("タイムラインにイベントがありません", "Tidak ada peristiwa di garis waktu")}</p>
     </div>
   ) : (
     <div className="mt-4 relative" ref={scrollRef}>
@@ -329,9 +331,9 @@ export default function TimelinePage() {
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen bg-background relative">
-        <StatusBar episodeCount={allEvents.length} unitLabel="タイムライン" />
+        <StatusBar episodeCount={allEvents.length} unitLabel={tr("タイムライン", "Garis Waktu")} />
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">
-          <h1 className="text-xl font-bold brand-gradient-text mb-3">タイムライン</h1>
+          <h1 className="text-xl font-bold brand-gradient-text mb-3">{tr("タイムライン", "Garis Waktu")}</h1>
           {filterChips}
           {yearJumps}
           {timelineView}
@@ -348,7 +350,7 @@ export default function TimelinePage() {
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6 max-w-2xl mx-auto w-full">
-          <h1 className="text-2xl font-bold brand-gradient-text mb-4">タイムライン</h1>
+          <h1 className="text-2xl font-bold brand-gradient-text mb-4">{tr("タイムライン", "Garis Waktu")}</h1>
           {filterChips}
           {yearJumps}
           {timelineView}
@@ -358,7 +360,7 @@ export default function TimelinePage() {
       {/* ===== DESKTOP ===== */}
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-3xl mx-auto w-full px-8 py-8">
-          <h1 className="text-3xl font-bold brand-gradient-text mb-4">タイムライン</h1>
+          <h1 className="text-3xl font-bold brand-gradient-text mb-4">{tr("タイムライン", "Garis Waktu")}</h1>
           <div className="flex items-center gap-4">
             {filterChips}
           </div>

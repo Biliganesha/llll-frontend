@@ -78,6 +78,9 @@ const GET_SUKUKONE_VIDEO = gql`
           }
         }
       }
+      sukukoneMirror {
+        mirrorUrl
+      }
     }
   }
 `;
@@ -125,6 +128,7 @@ type SukukoneVideo = {
     unit: { nodes: UnitNode[] } | null;
     episodeRelation: { nodes: EpisodeNode[] } | null;
   };
+  sukukoneMirror: { mirrorUrl: string | null } | null;
 };
 
 type QueryData = { sukukoneVideo: SukukoneVideo | null };
@@ -170,6 +174,7 @@ export default function SukukoneDetailPage() {
   const unitColor = unit?.unitDetails.colorPrimary || "#8b82f5";
   const performers = d?.performers?.nodes ?? [];
   const relatedEpisode = d?.episodeRelation?.nodes?.[0];
+  const mirror = video?.sukukoneMirror?.mirrorUrl ?? null;
 
   if (loading) {
     return (
@@ -194,10 +199,11 @@ export default function SukukoneDetailPage() {
     );
   }
 
-  // YouTube embed
-  const videoEmbed = d.youtubeVideoId ? (
+  // YouTube embed (mirror native sebagai cadangan — poin 5,6)
+  const videoEmbed = d.youtubeVideoId || mirror ? (
     <LinkuraPlayer
-      videoId={d.youtubeVideoId}
+      videoId={d.youtubeVideoId || undefined}
+      mirrorUrl={mirror || undefined}
       title={video.title}
       accentColor={unitColor}
       thumbnailUrl={d.thumbnail?.node.sourceUrl}
@@ -260,7 +266,7 @@ export default function SukukoneDetailPage() {
     infoRows.push({
       label: translate("sukukone.relatedEp", lang),
       value: (
-        <Link href={`/katsudou-kiroku/${relatedEpisode.slug}`} className="hover:underline text-primary">
+        <Link href={`/katsudou-kiroku/ep/${relatedEpisode.slug}`} className="hover:underline text-primary">
           {relatedEpisode.episodeDetails.episodeNumber
             ? `#${relatedEpisode.episodeDetails.episodeNumber} `
             : ""}

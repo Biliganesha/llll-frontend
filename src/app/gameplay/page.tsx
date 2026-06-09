@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTr } from "@/lib/language";
 
 const GET_GAMEPLAY = gql`
   query GetGameplayArchives {
@@ -66,15 +67,15 @@ type QueryData = { gameplayArchives: { nodes: GameplayNode[] } };
 
 type EventFilter = "all" | "story_event" | "ranking_event" | "gacha" | "live_show" | "campaign" | "ui_walkthrough" | "other";
 
-const EVENT_TYPES: { id: EventFilter; label: string }[] = [
-  { id: "all", label: "すべて" },
-  { id: "story_event", label: "ストーリー" },
-  { id: "ranking_event", label: "ランキング" },
-  { id: "gacha", label: "ガチャ" },
-  { id: "live_show", label: "ライブ" },
-  { id: "campaign", label: "キャンペーン" },
-  { id: "ui_walkthrough", label: "UI" },
-  { id: "other", label: "その他" },
+const EVENT_TYPES: { id: EventFilter; label: string; labelId: string }[] = [
+  { id: "all", label: "すべて", labelId: "Semua" },
+  { id: "story_event", label: "ストーリー", labelId: "Cerita" },
+  { id: "ranking_event", label: "ランキング", labelId: "Ranking" },
+  { id: "gacha", label: "ガチャ", labelId: "Gacha" },
+  { id: "live_show", label: "ライブ", labelId: "Live" },
+  { id: "campaign", label: "キャンペーン", labelId: "Kampanye" },
+  { id: "ui_walkthrough", label: "UI", labelId: "UI" },
+  { id: "other", label: "その他", labelId: "Lainnya" },
 ];
 
 function eventTypeLabel(type: string | undefined): string {
@@ -208,6 +209,7 @@ function GameplayCard({ item, card }: { item: GameplayNode; card?: boolean }) {
 export default function GameplayPage() {
   const { data, loading } = useQuery<QueryData>(GET_GAMEPLAY);
   const router = useRouter();
+  const tr = useTr();
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<EventFilter>("all");
 
@@ -229,7 +231,7 @@ export default function GameplayPage() {
                 : "bg-surface-2 text-text-dim hover:bg-border"
             }`}
           >
-            {et.label} ({count})
+            {tr(et.label, et.labelId)} ({count})
           </button>
         );
       })}
@@ -239,7 +241,7 @@ export default function GameplayPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-text-dim">読み込み中...</div>
+        <div className="animate-pulse text-text-dim">{tr("読み込み中...", "Memuat...")}</div>
       </div>
     );
   }
@@ -248,13 +250,13 @@ export default function GameplayPage() {
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen bg-background relative">
-        <StatusBar episodeCount={allItems.length} unitLabel="ゲームプレイ" />
+        <StatusBar episodeCount={allItems.length} unitLabel={tr("ゲームプレイ", "Gameplay")} />
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">
-          <h1 className="text-xl font-bold brand-gradient-text mb-3">ゲームプレイアーカイブ</h1>
+          <h1 className="text-xl font-bold brand-gradient-text mb-3">{tr("ゲームプレイアーカイブ", "Arsip Gameplay")}</h1>
           {filterChips}
           {filtered.length === 0 ? (
             <div className="py-12 text-center text-text-dim text-sm">
-              アーカイブはまだありません
+              {tr("アーカイブはまだありません", "Belum ada arsip")}
             </div>
           ) : (
             <div className="space-y-2">
@@ -274,11 +276,11 @@ export default function GameplayPage() {
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6">
-          <h1 className="text-2xl font-bold brand-gradient-text mb-4">ゲームプレイアーカイブ</h1>
+          <h1 className="text-2xl font-bold brand-gradient-text mb-4">{tr("ゲームプレイアーカイブ", "Arsip Gameplay")}</h1>
           {filterChips}
           {filtered.length === 0 ? (
             <div className="py-12 text-center text-text-dim text-sm">
-              アーカイブはまだありません
+              {tr("アーカイブはまだありません", "Belum ada arsip")}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
@@ -291,11 +293,11 @@ export default function GameplayPage() {
       {/* ===== DESKTOP ===== */}
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-5xl mx-auto w-full px-8 py-8">
-          <h1 className="text-3xl font-bold brand-gradient-text mb-4">ゲームプレイアーカイブ</h1>
+          <h1 className="text-3xl font-bold brand-gradient-text mb-4">{tr("ゲームプレイアーカイブ", "Arsip Gameplay")}</h1>
           {filterChips}
           {filtered.length === 0 ? (
             <div className="py-12 text-center text-text-dim text-sm">
-              アーカイブはまだありません
+              {tr("アーカイブはまだありません", "Belum ada arsip")}
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-5">

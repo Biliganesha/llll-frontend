@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
+import { MenuOverlay } from "@/components/ui/MenuOverlay";
 
 /**
  * TabletHome — OS-like feel untuk viewport tablet.
  * Seperti DesktopHome tapi lebih kompak, widget lebih ringkas, dock lebih besar.
+ * Tombol メニュー di dock membuka Menu Launcher terpadu (MenuOverlay).
  */
 export function TabletHome() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -24,7 +26,7 @@ export function TabletHome() {
             Library! Legacy!
           </h1>
           <p className="text-sm text-[var(--linkura-text-dim)] mt-3 tracking-[0.18em] font-medium">
-            蓮の空アーカイブ
+            蓮ノ空アーカイブ
           </p>
         </div>
       </main>
@@ -33,7 +35,7 @@ export function TabletHome() {
 
       <TabletDock onMenuClick={() => setMenuOpen(true)} />
 
-      <TabletLaunchpad open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
     </div>
   );
 }
@@ -60,7 +62,7 @@ function TabletStatusBar() {
         <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#b3d4ff] via-[#c9b3ff] to-[#ffb3d9] px-2.5 py-0.5 shadow-sm">
           <span className="text-[10px]" aria-hidden>🌸</span>
           <span className="text-[10px] font-semibold text-slate-800">
-            蓮の空アーカイブ
+            蓮ノ空アーカイブ
           </span>
         </div>
         <span className="tabular-nums text-sm font-bold text-slate-800">{time || "--:--"}</span>
@@ -150,95 +152,5 @@ function DockBtn({
     <button onClick={onClick} aria-label={label}>
       {content}
     </button>
-  );
-}
-
-function TabletLaunchpad({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
-  return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            aria-hidden
-            className="absolute inset-0 z-40 bg-white/40 backdrop-blur-2xl"
-          />
-          <motion.div
-            initial={{ scale: 0.92, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.92, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 380, damping: 34 }}
-            onClick={onClose}
-            className="absolute inset-0 z-50 flex items-center justify-center p-6"
-          >
-            <div
-              className="max-w-2xl w-full rounded-3xl bg-white/95 backdrop-blur-2xl shadow-2xl border border-white/80 overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="brand-gradient-bg px-5 py-2.5 flex items-center justify-between">
-                <h2 className="text-base font-bold text-white drop-shadow">メニュー</h2>
-                <button
-                  onClick={onClose}
-                  aria-label="Tutup"
-                  className="w-7 h-7 rounded-full bg-white/30 hover:bg-white/50 flex items-center justify-center text-white active:scale-90 transition"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-              <div className="p-5 grid grid-cols-3 gap-3">
-                <LpIcon href="/sukukone" label="スクコネ" emoji="🎤" gradient="linear-gradient(135deg, #6a7bff 0%, #a88dff 100%)" />
-                <LpIcon href="/katsudou-kiroku" label="活動記録" emoji="📖" gradient="linear-gradient(135deg, #ffb3d9 0%, #b3d4ff 100%)" />
-                <LpIcon href="/calendar" label="カレンダー" emoji="📅" gradient="linear-gradient(135deg, #9ee6ff 0%, #a5aeff 100%)" />
-                <LpIcon href="/characters" label="メンバー" emoji="🎀" gradient="linear-gradient(135deg, #ffd59e 0%, #ffb3c1 100%)" />
-                <LpIcon href="/units" label="ユニット" emoji="💫" gradient="linear-gradient(135deg, #c9b3ff 0%, #ffb3d9 100%)" />
-                <LpIcon href="/timeline" label="タイムライン" emoji="🕰️" gradient="linear-gradient(135deg, #b3e5ff 0%, #c9a5ff 100%)" />
-                <LpIcon href="/search" label="検索" emoji="🔍" gradient="linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%)" />
-                <LpIcon href="/community" label="フォーラム" emoji="💬" gradient="linear-gradient(135deg, #a5f3fc 0%, #7dd3fc 100%)" />
-                <LpIcon href="/about" label="About" emoji="ℹ️" gradient="linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)" />
-              </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  );
-}
-
-function LpIcon({
-  href,
-  label,
-  emoji,
-  gradient,
-}: {
-  href: string;
-  label: string;
-  emoji: string;
-  gradient: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-[var(--linkura-surface-2)]/60 transition"
-    >
-      <div
-        className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md group-hover:shadow-lg group-hover:-translate-y-0.5 group-active:scale-90 transition"
-        style={{ background: gradient }}
-      >
-        <span aria-hidden>{emoji}</span>
-      </div>
-      <span className="text-[10px] font-semibold text-[var(--linkura-text)]">{label}</span>
-    </Link>
   );
 }

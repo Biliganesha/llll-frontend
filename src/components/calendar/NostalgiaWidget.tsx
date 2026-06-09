@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/language";
 
 type NostalgiaEntry = {
   id: string;
@@ -47,6 +48,7 @@ function todayMMDD() {
 
 export function NostalgiaWidget() {
   const [mmdd, setMmdd] = useState<string>("");
+  const { t } = useLanguage();
 
   useEffect(() => {
     setMmdd(todayMMDD());
@@ -58,7 +60,7 @@ export function NostalgiaWidget() {
     <section className="bg-white p-4">
       <header className="flex items-baseline justify-between mb-2">
         <h2 className="text-sm font-bold brand-gradient-text">
-          今日の蓮の空
+          {t("今日の蓮ノ空", "Hari Ini di 蓮ノ空")}
         </h2>
         <span className="text-[10px] text-[var(--linkura-text-dim)] tabular-nums">
           {mmdd}
@@ -66,7 +68,10 @@ export function NostalgiaWidget() {
       </header>
 
       <p className="text-[11px] text-[var(--linkura-text-dim)] mb-3 leading-relaxed">
-        Hari ini di 蓮の空 — konten yang tayang di tanggal ini, dari tahun-tahun sebelumnya.
+        {t(
+          "この日に配信されたコンテンツを、過去の年から振り返ります。",
+          "Konten yang tayang di tanggal ini, dari tahun-tahun sebelumnya."
+        )}
       </p>
 
       <ul className="space-y-1.5">
@@ -101,7 +106,10 @@ export function NostalgiaWidget() {
       </ul>
 
       <p className="mt-3 text-[10px] text-[var(--linkura-text-dim)] italic">
-        * Data sampel. Akan terhubung ke arsip setelah backend siap.
+        {t(
+          "※ サンプルデータです。バックエンド接続後に実データに切り替わります。",
+          "* Data sampel. Akan terhubung ke arsip setelah backend siap."
+        )}
       </p>
     </section>
   );
