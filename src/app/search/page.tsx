@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTr } from "@/lib/language";
 
 const GET_SEARCH_DATA = gql`
   query GetSearchData {
@@ -80,12 +81,12 @@ type SearchResult = {
 
 type FilterType = "all" | "episode" | "sukukone" | "character" | "unit";
 
-const FILTER_OPTIONS: { id: FilterType; label: string }[] = [
-  { id: "all", label: "すべて" },
-  { id: "episode", label: "活動記録" },
-  { id: "sukukone", label: "スクコネ" },
-  { id: "character", label: "メンバー" },
-  { id: "unit", label: "ユニット" },
+const FILTER_OPTIONS: { id: FilterType; label: string; labelId: string }[] = [
+  { id: "all", label: "すべて", labelId: "Semua" },
+  { id: "episode", label: "活動記録", labelId: "Catatan Aktivitas" },
+  { id: "sukukone", label: "スクコネ", labelId: "SukuKone" },
+  { id: "character", label: "メンバー", labelId: "Anggota" },
+  { id: "unit", label: "ユニット", labelId: "Unit" },
 ];
 
 function tabTypeLabel(type: string | undefined): string {
@@ -188,6 +189,7 @@ const TYPE_LABELS: Record<string, string> = {
 export default function SearchPage() {
   const { data, loading } = useQuery(GET_SEARCH_DATA);
   const router = useRouter();
+  const tr = useTr();
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
@@ -215,7 +217,7 @@ export default function SearchPage() {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="エピソード、メンバー、ユニットを検索..."
+        placeholder={tr("エピソード、メンバー、ユニットを検索...", "Cari episode, anggota, unit...")}
         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
         autoFocus
       />
@@ -248,7 +250,7 @@ export default function SearchPage() {
                 : "bg-surface-2 text-text-dim hover:bg-border"
             }`}
           >
-            {opt.label} ({count})
+            {tr(opt.label, opt.labelId)} ({count})
           </button>
         );
       })}
@@ -270,7 +272,7 @@ export default function SearchPage() {
   ) : !hasQuery && filter === "all" ? (
     <div className="mt-8 text-center">
       <span className="text-4xl">🔍</span>
-      <p className="text-sm text-text-dim mt-3">キーワードを入力するか、カテゴリを選択してください</p>
+      <p className="text-sm text-text-dim mt-3">{tr("キーワードを入力するか、カテゴリを選択してください", "Masukkan kata kunci atau pilih kategori")}</p>
       <div className="mt-6 grid grid-cols-2 gap-2">
         {FILTER_OPTIONS.filter((o) => o.id !== "all").map((opt) => {
           const count = searchIndex.filter((r) => r.type === opt.id).length;
@@ -283,8 +285,8 @@ export default function SearchPage() {
               <span className="text-2xl">
                 {opt.id === "episode" ? "📼" : opt.id === "sukukone" ? "🎤" : opt.id === "character" ? "🎀" : "💫"}
               </span>
-              <p className="text-sm font-medium mt-1">{opt.label}</p>
-              <p className="text-xs text-text-dim">{count}件</p>
+              <p className="text-sm font-medium mt-1">{tr(opt.label, opt.labelId)}</p>
+              <p className="text-xs text-text-dim">{count}{tr("件", " item")}</p>
             </button>
           );
         })}
@@ -294,12 +296,12 @@ export default function SearchPage() {
     <div className="mt-8 text-center">
       <span className="text-4xl">😔</span>
       <p className="text-sm text-text-dim mt-3">
-        「{query}」に一致する結果はありません
+        {tr(`「${query}」に一致する結果はありません`, `Tidak ada hasil untuk "${query}"`)}
       </p>
     </div>
   ) : (
     <div className="space-y-1.5 mt-4">
-      <p className="text-xs text-text-dim mb-2">{results.length}件の結果</p>
+      <p className="text-xs text-text-dim mb-2">{tr(`${results.length}件の結果`, `${results.length} hasil`)}</p>
       {results.map((r) => (
         <Link
           key={`${r.type}-${r.id}`}
@@ -344,9 +346,9 @@ export default function SearchPage() {
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen bg-background relative">
-        <StatusBar episodeCount={0} unitLabel="検索" />
+        <StatusBar episodeCount={0} unitLabel={tr("検索", "Pencarian")} />
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">
-          <h1 className="text-xl font-bold brand-gradient-text mb-3">検索</h1>
+          <h1 className="text-xl font-bold brand-gradient-text mb-3">{tr("検索", "Pencarian")}</h1>
           {searchInput}
           {filterChips}
           {resultsList}
@@ -363,7 +365,7 @@ export default function SearchPage() {
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6">
-          <h1 className="text-2xl font-bold brand-gradient-text mb-4">検索</h1>
+          <h1 className="text-2xl font-bold brand-gradient-text mb-4">{tr("検索", "Pencarian")}</h1>
           <div className="max-w-lg">
             {searchInput}
             {filterChips}
@@ -375,7 +377,7 @@ export default function SearchPage() {
       {/* ===== DESKTOP ===== */}
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-3xl mx-auto w-full px-8 py-8">
-          <h1 className="text-3xl font-bold brand-gradient-text mb-4">検索</h1>
+          <h1 className="text-3xl font-bold brand-gradient-text mb-4">{tr("検索", "Pencarian")}</h1>
           <div className="max-w-lg">
             {searchInput}
             {filterChips}

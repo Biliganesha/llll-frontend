@@ -282,7 +282,7 @@ export default function CalendarPage() {
         {MONTH_NAMES[viewMonth]}のイベント ({monthEvents.length})
       </h3>
       {monthEvents.length === 0 ? (
-        <p className="text-xs text-text-dim">この月のイベントはありません</p>
+        <p className="text-xs text-text-dim">{tr("この月のイベントはありません", "Tidak ada acara di bulan ini")}</p>
       ) : (
         <div className="space-y-1.5">
           {monthEvents
@@ -311,7 +311,7 @@ export default function CalendarPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-text-dim">読み込み中...</div>
+        <div className="animate-pulse text-text-dim">{tr("読み込み中...", "Memuat...")}</div>
       </div>
     );
   }

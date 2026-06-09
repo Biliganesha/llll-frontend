@@ -152,7 +152,7 @@ export default function CharacterDetailPage() {
   const infoRows: { label: string; value: string }[] = [];
   if (d.birthday) infoRows.push({ label: translate("characters.birthday", lang), value: d.birthday });
   if (d.generation?.[0])
-    infoRows.push({ label: translate("characters.generation", lang), value: `${d.generation[0]}期生` });
+    infoRows.push({ label: translate("characters.generation", lang), value: lang === "jp" ? `${d.generation[0]}期生` : `Angkatan ${d.generation[0]}` });
   if (d.schoolClass) infoRows.push({ label: translate("characters.class", lang), value: d.schoolClass });
   if (d.hobby) infoRows.push({ label: translate("characters.hobby", lang), value: d.hobby });
   if (d.seiyuu) infoRows.push({ label: translate("characters.cv", lang), value: d.seiyuu });
@@ -161,12 +161,20 @@ export default function CharacterDetailPage() {
   const bioHtml = t(d.bioJp, d.bioId);
   const bioLabel = translate("characters.bio", lang);
   const backLabel = `← ${translate("nav.members", lang)}`;
+  // Nama: JP=kanji utama, ID=romaji utama (kanji sebagai sekunder)
+  const primaryName = lang === "jp" ? d.nameJp : d.nameRomaji || d.nameJp;
+  const secondaryName = lang === "jp" ? d.nameRomaji : d.nameJp;
+  const unitDisplay = unit
+    ? lang === "jp"
+      ? unit.unitDetails.nameJp
+      : unit.unitDetails.nameRomaji || unit.unitDetails.nameJp
+    : null;
 
   return (
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen bg-background relative">
-        <StatusBar episodeCount={0} unitLabel={d.nameJp} />
+        <StatusBar episodeCount={0} unitLabel={primaryName} />
 
         <main className="flex-1 pb-20 overflow-y-auto">
           {/* Hero */}
@@ -191,8 +199,8 @@ export default function CharacterDetailPage() {
 
           {/* Profile info */}
           <div className="px-4 -mt-8 relative z-10">
-            <h1 className="text-2xl font-bold" style={{ color }}>{d.nameJp}</h1>
-            <p className="text-sm text-text-dim">{d.nameRomaji}</p>
+            <h1 className="text-2xl font-bold" style={{ color }}>{primaryName}</h1>
+            <p className="text-sm text-text-dim">{secondaryName}</p>
 
             {unit && (
               <Link
@@ -200,7 +208,7 @@ export default function CharacterDetailPage() {
                 className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-xs font-medium text-white"
                 style={{ background: unit.unitDetails.colorPrimary || color }}
               >
-                {unit.unitDetails.nameJp}
+                {unitDisplay}
               </Link>
             )}
 
@@ -269,8 +277,8 @@ export default function CharacterDetailPage() {
               {backLabel}
             </Link>
 
-            <h1 className="text-3xl font-bold mt-3" style={{ color }}>{d.nameJp}</h1>
-            <p className="text-base text-text-dim">{d.nameRomaji}</p>
+            <h1 className="text-3xl font-bold mt-3" style={{ color }}>{primaryName}</h1>
+            <p className="text-base text-text-dim">{secondaryName}</p>
 
             {unit && (
               <Link
@@ -278,7 +286,7 @@ export default function CharacterDetailPage() {
                 className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-xs font-medium text-white"
                 style={{ background: unit.unitDetails.colorPrimary || color }}
               >
-                {unit.unitDetails.nameJp}
+                {unitDisplay}
               </Link>
             )}
 
@@ -343,8 +351,8 @@ export default function CharacterDetailPage() {
             </div>
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-4xl font-bold" style={{ color }}>{d.nameJp}</h1>
-              <p className="text-lg text-text-dim mt-1">{d.nameRomaji}</p>
+              <h1 className="text-4xl font-bold" style={{ color }}>{primaryName}</h1>
+              <p className="text-lg text-text-dim mt-1">{secondaryName}</p>
 
               {unit && (
                 <Link
@@ -352,7 +360,7 @@ export default function CharacterDetailPage() {
                   className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full text-sm font-medium text-white transition-opacity hover:opacity-90"
                   style={{ background: unit.unitDetails.colorPrimary || color }}
                 >
-                  {unit.unitDetails.nameJp}
+                  {unitDisplay}
                 </Link>
               )}
 

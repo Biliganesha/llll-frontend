@@ -8,6 +8,7 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTr } from "@/lib/language";
 
 const GET_RELATIONSHIP_DATA = gql`
   query GetRelationshipData {
@@ -157,6 +158,7 @@ export default function RelationshipsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 500 });
   const router = useRouter();
+  const tr = useTr();
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -251,7 +253,7 @@ export default function RelationshipsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-text-dim">読み込み中...</div>
+        <div className="animate-pulse text-text-dim">{tr("読み込み中...", "Memuat...")}</div>
       </div>
     );
   }
@@ -582,7 +584,7 @@ export default function RelationshipsPage() {
           : "bg-surface-2 text-text-dim hover:text-foreground"
       }`}
     >
-      {showGenerations ? "期生ライン ON" : "期生ラインを表示"}
+      {showGenerations ? tr("期生ライン ON", "Garis Angkatan ON") : tr("期生ラインを表示", "Tampilkan Garis Angkatan")}
     </button>
   );
 
@@ -590,10 +592,10 @@ export default function RelationshipsPage() {
     <>
       {/* ===== PHONE ===== */}
       <div className="sm:hidden flex-1 flex flex-col min-h-screen bg-background relative">
-        <StatusBar episodeCount={0} unitLabel="相関図" />
+        <StatusBar episodeCount={0} unitLabel={tr("相関図", "Peta Relasi")} />
         <main className="flex-1 px-3 pt-2 pb-20 overflow-y-auto">
-          <h1 className="text-lg font-bold brand-gradient-text">相関図</h1>
-          <p className="text-xs text-text-dim mt-1 mb-3">メンバーの関係をタップで確認</p>
+          <h1 className="text-lg font-bold brand-gradient-text">{tr("相関図", "Peta Relasi")}</h1>
+          <p className="text-xs text-text-dim mt-1 mb-3">{tr("メンバーの関係をタップで確認", "Ketuk untuk melihat hubungan anggota")}</p>
 
           <div className="flex items-center justify-between mb-2">
             {toggleBtn}
@@ -622,9 +624,9 @@ export default function RelationshipsPage() {
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <main className="flex-1 px-6 py-6">
-          <h1 className="text-2xl font-bold brand-gradient-text">相関図</h1>
+          <h1 className="text-2xl font-bold brand-gradient-text">{tr("相関図", "Peta Relasi")}</h1>
           <p className="text-sm text-text-dim mt-1 mb-4">
-            メンバーをタップして関係を確認しましょう
+            {tr("メンバーをタップして関係を確認しましょう", "Ketuk anggota untuk melihat hubungan")}
           </p>
 
           <div className="flex items-center justify-between mb-3">
@@ -648,9 +650,12 @@ export default function RelationshipsPage() {
       {/* ===== DESKTOP ===== */}
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-5xl mx-auto w-full px-8 py-8">
-          <h1 className="text-3xl font-bold brand-gradient-text">相関図</h1>
+          <h1 className="text-3xl font-bold brand-gradient-text">{tr("相関図", "Peta Relasi")}</h1>
           <p className="text-sm text-text-dim mt-2 mb-5">
-            蓮ノ空メンバーの関係を視覚的に。ノードをクリックして詳細を表示。
+            {tr(
+              "蓮ノ空メンバーの関係を視覚的に。ノードをクリックして詳細を表示。",
+              "Visualisasi hubungan anggota 蓮ノ空. Klik node untuk melihat detail."
+            )}
           </p>
 
           <div className="flex items-center justify-between mb-4">

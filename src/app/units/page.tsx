@@ -88,6 +88,7 @@ type QueryData = { units: { nodes: UnitNode[] } };
 
 function UnitCard({ unit }: { unit: UnitNode }) {
   const d = unit.unitDetails;
+  const tr = useTr();
   const color = d.colorPrimary || "#8b82f5";
   const color2 = d.colorSecondary || color;
   const members = d.members?.nodes ?? [];
@@ -112,7 +113,7 @@ function UnitCard({ unit }: { unit: UnitNode }) {
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-3xl font-bold text-white/30">{d.nameJp}</span>
+            <span className="text-3xl font-bold text-white/30">{tr(d.nameJp, d.nameRomaji)}</span>
           </div>
         )}
 
@@ -125,9 +126,9 @@ function UnitCard({ unit }: { unit: UnitNode }) {
         {/* Unit name */}
         <div className="absolute bottom-3 left-3 right-3">
           <h2 className="text-lg font-bold text-white drop-shadow-lg group-hover:scale-[1.02] transition-transform origin-left">
-            {d.nameJp}
+            {tr(d.nameJp, d.nameRomaji)}
           </h2>
-          <p className="text-xs text-white/70">{d.nameRomaji}</p>
+          <p className="text-xs text-white/70">{tr(d.nameRomaji, d.nameJp)}</p>
         </div>
       </div>
 
