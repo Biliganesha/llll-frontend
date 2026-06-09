@@ -5,6 +5,7 @@ import { StatusBar } from "@/components/ui/StatusBar";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { NotificationBar } from "@/components/ui/NotificationBar";
+import { useTr } from "@/lib/language";
 
 type Props = {
   menuOpen: boolean;
@@ -17,10 +18,11 @@ type Props = {
  */
 export function PhoneHome({ menuOpen, setMenuOpen }: Props) {
   const router = useRouter();
+  const tr = useTr();
 
   return (
     <div className="relative flex-1 flex flex-col min-h-screen wallpaper-default overflow-hidden">
-      <StatusBar episodeCount={0} unitLabel="アーカイブ" />
+      <StatusBar episodeCount={0} unitLabel={tr("アーカイブ", "Arsip")} />
 
       <NotificationBar />
 
@@ -31,7 +33,7 @@ export function PhoneHome({ menuOpen, setMenuOpen }: Props) {
               Link! Like!<br />Library! Legacy!
             </h1>
             <p className="text-[11px] text-[var(--linkura-text-dim)] mt-2 tracking-wider">
-              蓮ノ空アーカイブ
+              {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
             </p>
           </div>
         </div>

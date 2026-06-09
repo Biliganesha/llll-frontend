@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
+import { useTr } from "@/lib/language";
 
 /**
  * DesktopHome — paradigma desktop OS (bukan website klasik).
@@ -14,6 +15,7 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
  */
 export function DesktopHome() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const tr = useTr();
 
   return (
     <div className="relative flex-1 min-h-screen wallpaper-default overflow-hidden">
@@ -27,10 +29,13 @@ export function DesktopHome() {
             Library! Legacy!
           </h1>
           <p className="text-base text-[var(--linkura-text-dim)] mt-4 tracking-[0.2em] font-medium">
-            蓮ノ空アーカイブ
+            {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
           </p>
           <p className="text-xs text-[var(--linkura-text-dim)]/70 mt-2">
-            Link! Like! Love Live! 蓮ノ空の活動を永続保存
+            {tr(
+              "Link! Like! Love Live! 蓮ノ空の活動を永続保存",
+              "Link! Like! Love Live! — Mengabadikan aktivitas 蓮ノ空"
+            )}
           </p>
         </div>
       </main>
@@ -45,6 +50,7 @@ export function DesktopHome() {
 }
 
 function DesktopStatusBar() {
+  const tr = useTr();
   const [time, setTime] = useState<string>("");
   const [date, setDate] = useState<string>("");
 
@@ -80,7 +86,7 @@ function DesktopStatusBar() {
         <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#b3d4ff] via-[#c9b3ff] to-[#ffb3d9] px-3 py-1 shadow-sm">
           <span className="text-xs" aria-hidden>🌸</span>
           <span className="text-[11px] font-semibold text-slate-800">
-            蓮ノ空アーカイブ
+            {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
           </span>
         </div>
         <div className="tabular-nums text-[11px] font-medium text-slate-700">
@@ -95,6 +101,7 @@ function DesktopStatusBar() {
 }
 
 function DesktopWidget() {
+  const tr = useTr();
   return (
     <motion.div
       drag
@@ -108,9 +115,9 @@ function DesktopWidget() {
       <div className="rounded-3xl bg-white/92 backdrop-blur-xl shadow-2xl border border-white/80 overflow-hidden">
         <div className="brand-gradient-bg px-4 py-2 flex items-center justify-between">
           <span className="text-xs font-bold text-white drop-shadow">
-            📌 Pinned Widget
+            📌 {tr("ピン留めウィジェット", "Widget Tersemat")}
           </span>
-          <span className="text-[9px] text-white/80">Drag to move</span>
+          <span className="text-[9px] text-white/80">{tr("ドラッグで移動", "Seret untuk pindah")}</span>
         </div>
         <NostalgiaWidget />
       </div>

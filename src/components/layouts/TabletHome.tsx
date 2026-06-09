@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
+import { useTr } from "@/lib/language";
 
 /**
  * TabletHome — OS-like feel untuk viewport tablet.
@@ -13,6 +14,7 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
  */
 export function TabletHome() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const tr = useTr();
 
   return (
     <div className="relative flex-1 min-h-screen wallpaper-default overflow-hidden">
@@ -26,7 +28,7 @@ export function TabletHome() {
             Library! Legacy!
           </h1>
           <p className="text-sm text-[var(--linkura-text-dim)] mt-3 tracking-[0.18em] font-medium">
-            蓮ノ空アーカイブ
+            {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
           </p>
         </div>
       </main>
@@ -41,6 +43,7 @@ export function TabletHome() {
 }
 
 function TabletStatusBar() {
+  const tr = useTr();
   const [time, setTime] = useState<string>("");
 
   useEffect(() => {
@@ -62,7 +65,7 @@ function TabletStatusBar() {
         <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#b3d4ff] via-[#c9b3ff] to-[#ffb3d9] px-2.5 py-0.5 shadow-sm">
           <span className="text-[10px]" aria-hidden>🌸</span>
           <span className="text-[10px] font-semibold text-slate-800">
-            蓮ノ空アーカイブ
+            {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
           </span>
         </div>
         <span className="tabular-nums text-sm font-bold text-slate-800">{time || "--:--"}</span>
@@ -72,6 +75,7 @@ function TabletStatusBar() {
 }
 
 function TabletWidget() {
+  const tr = useTr();
   return (
     <motion.div
       drag
@@ -84,8 +88,8 @@ function TabletWidget() {
     >
       <div className="rounded-3xl bg-white/92 backdrop-blur-xl shadow-xl border border-white/80 overflow-hidden">
         <div className="brand-gradient-bg px-3 py-2 flex items-center justify-between">
-          <span className="text-[11px] font-bold text-white drop-shadow">📌 Widget</span>
-          <span className="text-[9px] text-white/80">Drag</span>
+          <span className="text-[11px] font-bold text-white drop-shadow">📌 {tr("ウィジェット", "Widget")}</span>
+          <span className="text-[9px] text-white/80">{tr("移動", "Seret")}</span>
         </div>
         <NostalgiaWidget />
       </div>
