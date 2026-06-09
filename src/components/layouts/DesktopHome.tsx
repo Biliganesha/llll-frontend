@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
-import { useTr } from "@/lib/language";
+import { useTr, useLanguage } from "@/lib/language";
 
 /**
  * DesktopHome — paradigma desktop OS (bukan website klasik).
@@ -51,6 +51,7 @@ export function DesktopHome() {
 
 function DesktopStatusBar() {
   const tr = useTr();
+  const { lang, setLang } = useLanguage();
   const [time, setTime] = useState<string>("");
   const [date, setDate] = useState<string>("");
 
@@ -83,6 +84,13 @@ function DesktopStatusBar() {
       </div>
 
       <div className="flex items-center gap-3 text-slate-700">
+        <button
+          onClick={() => setLang(lang === "jp" ? "id" : "jp")}
+          className="rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-white active:scale-95 transition cursor-pointer shadow-sm"
+          aria-label="言語切替 / Ganti bahasa"
+        >
+          {lang === "jp" ? "JP" : "ID"}
+        </button>
         <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#b3d4ff] via-[#c9b3ff] to-[#ffb3d9] px-3 py-1 shadow-sm">
           <span className="text-xs" aria-hidden>🌸</span>
           <span className="text-[11px] font-semibold text-slate-800">

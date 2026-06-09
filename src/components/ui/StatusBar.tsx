@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/language";
 
 type StatusBarProps = {
   episodeCount?: number;
@@ -17,6 +18,7 @@ export function StatusBar({
   memberName = "蓮ノ空",
   unitLabel = "アーカイブ",
 }: StatusBarProps) {
+  const { lang, setLang } = useLanguage();
   const [time, setTime] = useState<string>("");
 
   useEffect(() => {
@@ -46,14 +48,24 @@ export function StatusBar({
         </span>
       </div>
 
-      <div className="flex items-center gap-1 rounded-full bg-white/60 px-2 py-0.5">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <polygon points="23 7 16 12 23 17 23 7" />
-          <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-        </svg>
-        <span className="text-[11px] font-semibold tabular-nums text-slate-700">
-          {episodeCount.toLocaleString("ja-JP")}
-        </span>
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={() => setLang(lang === "jp" ? "id" : "jp")}
+          className="rounded-full bg-white/70 px-2 py-0.5 text-[11px] font-bold text-slate-700 active:scale-95 transition cursor-pointer"
+          aria-label="言語切替 / Ganti bahasa"
+        >
+          {lang === "jp" ? "JP" : "ID"}
+        </button>
+
+        <div className="flex items-center gap-1 rounded-full bg-white/60 px-2 py-0.5">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <polygon points="23 7 16 12 23 17 23 7" />
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+          </svg>
+          <span className="text-[11px] font-semibold tabular-nums text-slate-700">
+            {episodeCount.toLocaleString("ja-JP")}
+          </span>
+        </div>
       </div>
     </div>
   );

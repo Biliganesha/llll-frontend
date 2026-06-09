@@ -6,32 +6,22 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "@/lib/language";
 import { ABOUT_SECTIONS, MISSION_JP, MISSION_ID } from "@/lib/site-content";
 
-const STORAGE_KEY = "llll-disclaimer-accepted";
-
 /**
- * FirstVisitModal — gerbang "Terms & Conditions" yang tampil sekali saat situs
- * pertama dibuka (poin 17). Menampilkan misi + 免責事項 + 権利者の皆様へ supaya
- * pengunjung langsung membaca disclaimer tanpa harus membuka menu About.
- * Status persetujuan disimpan di localStorage (key: llll-disclaimer-accepted).
+ * FirstVisitModal — gerbang "Terms & Conditions" yang tampil SETIAP kunjungan
+ * (tiap situs dibuka/refresh, poin 17). Menampilkan misi + 免責事項 + 権利者の皆様へ
+ * supaya pengunjung langsung membaca disclaimer tanpa harus membuka menu About.
+ * Tidak disimpan ke localStorage — sengaja muncul lagi tiap kali halaman dimuat penuh.
  */
 export function FirstVisitModal() {
   const { lang, setLang, t } = useLanguage();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    try {
-      if (localStorage.getItem(STORAGE_KEY) !== "1") setShow(true);
-    } catch {
-      setShow(true);
-    }
+    // Tampil tiap kali komponen mount (= tiap full page load / kunjungan baru).
+    setShow(true);
   }, []);
 
   const accept = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      /* localStorage tidak tersedia — tetap tutup modal */
-    }
     setShow(false);
   };
 

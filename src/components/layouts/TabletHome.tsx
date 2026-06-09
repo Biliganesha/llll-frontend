@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
-import { useTr } from "@/lib/language";
+import { useTr, useLanguage } from "@/lib/language";
 
 /**
  * TabletHome — OS-like feel untuk viewport tablet.
@@ -44,6 +44,7 @@ export function TabletHome() {
 
 function TabletStatusBar() {
   const tr = useTr();
+  const { lang, setLang } = useLanguage();
   const [time, setTime] = useState<string>("");
 
   useEffect(() => {
@@ -62,6 +63,13 @@ function TabletStatusBar() {
     <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 py-2 bg-white/65 backdrop-blur-md border-b border-white/50 select-none">
       <span className="text-sm font-extrabold brand-gradient-text">L!L!L!L!</span>
       <div className="flex items-center gap-2">
+        <button
+          onClick={() => setLang(lang === "jp" ? "id" : "jp")}
+          className="rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-white active:scale-95 transition cursor-pointer shadow-sm"
+          aria-label="言語切替 / Ganti bahasa"
+        >
+          {lang === "jp" ? "JP" : "ID"}
+        </button>
         <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#b3d4ff] via-[#c9b3ff] to-[#ffb3d9] px-2.5 py-0.5 shadow-sm">
           <span className="text-[10px]" aria-hidden>🌸</span>
           <span className="text-[10px] font-semibold text-slate-800">

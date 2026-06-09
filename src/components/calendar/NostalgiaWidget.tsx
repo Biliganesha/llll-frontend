@@ -8,7 +8,9 @@ type NostalgiaEntry = {
   year: number;
   type: "with-meets" | "fes-live" | "with-station" | "katsudou-kiroku";
   character?: string;
+  characterRomaji?: string;
   unit?: string;
+  unitRomaji?: string;
   title: string;
 };
 
@@ -18,7 +20,9 @@ const MOCK_ENTRIES: NostalgiaEntry[] = [
     year: 2023,
     type: "with-meets",
     character: "日野下 花帆",
+    characterRomaji: "Hinoshita Kaho",
     unit: "Cerise Bouquet",
+    unitRomaji: "Cerise Bouquet",
     title: "初めてのWith×MEETS — ドキドキの配信!",
   },
   {
@@ -26,7 +30,9 @@ const MOCK_ENTRIES: NostalgiaEntry[] = [
     year: 2024,
     type: "fes-live",
     character: "乙宗 梢",
+    characterRomaji: "Otomune Kozue",
     unit: "Cerise Bouquet",
+    unitRomaji: "Cerise Bouquet",
     title: "Fes×LIVE #12 — 桜舞う月",
   },
   {
@@ -34,7 +40,9 @@ const MOCK_ENTRIES: NostalgiaEntry[] = [
     year: 2025,
     type: "with-meets",
     character: "藤島 慈",
+    characterRomaji: "Fujishima Megumi",
     unit: "みらくらぱーく!",
+    unitRomaji: "Mira-Cra Park!",
     title: "With×MEETS 新学期スペシャル",
   },
 ];
@@ -98,7 +106,7 @@ export function NostalgiaWidget() {
                 {e.title}
               </div>
               <div className="text-[10px] text-[var(--linkura-text-dim)] truncate">
-                {e.character} · {e.unit}
+                {t(e.character ?? "", e.characterRomaji ?? "")} · {t(e.unit ?? "", e.unitRomaji ?? "")}
               </div>
             </div>
           </li>
