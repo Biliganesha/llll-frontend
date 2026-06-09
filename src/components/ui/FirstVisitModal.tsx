@@ -12,13 +12,23 @@ import { ABOUT_SECTIONS, MISSION_JP, MISSION_ID } from "@/lib/site-content";
  * supaya pengunjung langsung membaca disclaimer tanpa harus membuka menu About.
  * Tidak disimpan ke localStorage — sengaja muncul lagi tiap kali halaman dimuat penuh.
  */
+/** Greeting berdasarkan jam lokal user (browser timezone — tiap wilayah beda). */
+function timeGreeting(hour: number): { jp: string; id: string } {
+  if (hour >= 5 && hour < 11) return { jp: "おはようございます", id: "Selamat pagi" };
+  if (hour >= 11 && hour < 15) return { jp: "こんにちは", id: "Selamat siang" };
+  if (hour >= 15 && hour < 18) return { jp: "こんにちは", id: "Selamat sore" };
+  return { jp: "こんばんは", id: "Selamat malam" };
+}
+
 export function FirstVisitModal() {
   const { lang, setLang, t } = useLanguage();
   const [show, setShow] = useState(false);
+  const [greet, setGreet] = useState<{ jp: string; id: string }>({ jp: "ようこそ", id: "Selamat datang" });
 
   useEffect(() => {
     // Tampil tiap kali komponen mount (= tiap full page load / kunjungan baru).
     setShow(true);
+    setGreet(timeGreeting(new Date().getHours())); // jam lokal browser user
   }, []);
 
   const accept = () => {
@@ -50,7 +60,7 @@ export function FirstVisitModal() {
             <div className="brand-gradient-bg px-5 py-3 flex items-center justify-between shrink-0">
               <div>
                 <h2 className="text-base font-bold text-white drop-shadow leading-tight">
-                  ようこそ · Selamat datang
+                  {greet.jp} · {greet.id}
                 </h2>
                 <p className="text-[11px] text-white/85 leading-tight">
                   Link! Like! Library! Legacy!
