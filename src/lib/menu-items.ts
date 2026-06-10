@@ -128,6 +128,14 @@ export const MEMBERS_GROUP: MenuGroup = {
       gradient: "linear-gradient(135deg, #c9b3ff 0%, #ffb3d9 100%)",
     },
     {
+      href: "/seiyuu",
+      label: "声優",
+      labelId: "Seiyuu",
+      sub: "Voice Actors",
+      emoji: "🎤",
+      gradient: "linear-gradient(135deg, #ffb3c1 0%, #c9b3ff 100%)",
+    },
+    {
       href: "/relationships",
       label: "相関図",
       labelId: "Peta Relasi",

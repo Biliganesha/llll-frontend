@@ -121,7 +121,7 @@ export default function CharactersPage() {
             {tr("メンバー", "Anggota")}
           </h1>
           <p className="text-xs text-text-dim mb-3">
-            蓮ノ空女学院スクールアイドルクラブ
+            {tr("蓮ノ空女学院スクールアイドルクラブ", "Klub School Idol SMA Putri Hasunosora")}
           </p>
 
           {/* Unit filter chips */}
@@ -182,7 +182,7 @@ export default function CharactersPage() {
         <header className="px-6 pt-6 pb-4">
           <h1 className="text-2xl font-bold brand-gradient-text">{tr("メンバー", "Anggota")}</h1>
           <p className="text-sm text-text-dim mt-1">
-            蓮ノ空女学院スクールアイドルクラブ
+            {tr("蓮ノ空女学院スクールアイドルクラブ", "Klub School Idol SMA Putri Hasunosora")}
           </p>
 
           <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
@@ -239,7 +239,7 @@ export default function CharactersPage() {
                 {tr("メンバー", "Anggota")}
               </h1>
               <p className="text-sm text-text-dim mt-1">
-                蓮ノ空女学院スクールアイドルクラブ{tr(` — ${characters.length}人`, ` — ${characters.length} anggota`)}
+                {tr("蓮ノ空女学院スクールアイドルクラブ", "Klub School Idol SMA Putri Hasunosora")}{tr(` — ${characters.length}人`, ` — ${characters.length} anggota`)}
               </p>
             </div>
 

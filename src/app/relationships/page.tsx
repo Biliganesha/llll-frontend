@@ -266,7 +266,7 @@ export default function RelationshipsPage() {
     );
   }
 
-  const nodeRadius = Math.min(dimensions.width, dimensions.height) < 500 ? 22 : 28;
+  const nodeRadius = Math.min(dimensions.width, dimensions.height) < 500 ? 28 : 38;
 
   const svgContent = (
     <svg
@@ -429,7 +429,7 @@ export default function RelationshipsPage() {
                 width={(nodeRadius - 2) * 2}
                 height={(nodeRadius - 2) * 2}
                 clipPath={`url(#clip-${p.charId})`}
-                preserveAspectRatio="xMidYMid slice"
+                preserveAspectRatio="xMidYMin slice"
               />
             ) : (
               <text
