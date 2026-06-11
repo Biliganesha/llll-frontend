@@ -29,12 +29,12 @@ export function DesktopHome() {
             Library! Legacy!
           </h1>
           <p className="text-base text-[var(--linkura-text-dim)] mt-4 tracking-[0.2em] font-medium">
-            {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
+            {tr("蓮ノ空アーカイブ", "Arsip Hasunosora")}
           </p>
           <p className="text-xs text-[var(--linkura-text-dim)]/70 mt-2">
             {tr(
               "Link! Like! Love Live! 蓮ノ空の活動を永続保存",
-              "Link! Like! Love Live! — Mengabadikan aktivitas 蓮ノ空"
+              "Link! Like! Love Live! — Mengabadikan aktivitas Hasunosora"
             )}
           </p>
         </div>
@@ -94,7 +94,7 @@ function DesktopStatusBar() {
         <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#b3d4ff] via-[#c9b3ff] to-[#ffb3d9] px-3 py-1 shadow-sm">
           <span className="text-xs" aria-hidden>🌸</span>
           <span className="text-[11px] font-semibold text-slate-800">
-            {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
+            {tr("蓮ノ空アーカイブ", "Arsip Hasunosora")}
           </span>
         </div>
         <div className="tabular-nums text-[11px] font-medium text-slate-700">

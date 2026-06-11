@@ -203,7 +203,7 @@ export default function CalendarPage() {
       <h2 className="text-sm font-bold brand-gradient-text mb-2">
         {tr(
           `今日の蓮ノ空 — ${today.getMonth() + 1}月${today.getDate()}日`,
-          `Hari Ini di 蓮ノ空 — ${today.getMonth() + 1}/${today.getDate()}`
+          `Hari Ini di Hasunosora — ${today.getMonth() + 1}/${today.getDate()}`
         )}
       </h2>
       <div className="space-y-1.5">

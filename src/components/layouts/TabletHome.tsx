@@ -28,7 +28,7 @@ export function TabletHome() {
             Library! Legacy!
           </h1>
           <p className="text-sm text-[var(--linkura-text-dim)] mt-3 tracking-[0.18em] font-medium">
-            {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
+            {tr("蓮ノ空アーカイブ", "Arsip Hasunosora")}
           </p>
         </div>
       </main>
@@ -73,7 +73,7 @@ function TabletStatusBar() {
         <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#b3d4ff] via-[#c9b3ff] to-[#ffb3d9] px-2.5 py-0.5 shadow-sm">
           <span className="text-[10px]" aria-hidden>🌸</span>
           <span className="text-[10px] font-semibold text-slate-800">
-            {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
+            {tr("蓮ノ空アーカイブ", "Arsip Hasunosora")}
           </span>
         </div>
         <span className="tabular-nums text-sm font-bold text-slate-800">{time || "--:--"}</span>

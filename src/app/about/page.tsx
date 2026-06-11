@@ -83,9 +83,7 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* Tech credits */}
-      <div className="text-center text-[11px] text-text-dim/50 py-4 space-y-1">
-        <p>Built with Next.js + WordPress (WPGraphQL)</p>
+      <div className="text-center text-[11px] text-text-dim/50 py-4">
         <p>Fan-made project — not affiliated with Bandai Namco or ODD No.</p>
       </div>
     </div>

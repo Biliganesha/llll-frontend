@@ -33,7 +33,7 @@ export function PhoneHome({ menuOpen, setMenuOpen }: Props) {
               Link! Like!<br />Library! Legacy!
             </h1>
             <p className="text-[11px] text-[var(--linkura-text-dim)] mt-2 tracking-wider">
-              {tr("蓮ノ空アーカイブ", "Arsip 蓮ノ空")}
+              {tr("蓮ノ空アーカイブ", "Arsip Hasunosora")}
             </p>
           </div>
         </div>

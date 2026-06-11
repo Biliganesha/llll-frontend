@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/lib/language";
@@ -117,12 +117,24 @@ export function NavBar() {
 
 function MembersDropdown({ active }: { active: boolean }) {
   const [open, setOpen] = useState(false);
+  // posisi fixed: panel harus lolos dari klip overflow-x-auto container nav links
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
   const { lang } = useLanguage();
+
+  const toggle = () => {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ left: r.left, top: r.bottom + 4 });
+    }
+    setOpen((v) => !v);
+  };
 
   return (
     <div className="relative shrink-0">
       <button
-        onClick={() => setOpen((v) => !v)}
+        ref={btnRef}
+        onClick={toggle}
         className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
           active || open
             ? "bg-primary/10 text-primary"
@@ -155,7 +167,10 @@ function MembersDropdown({ active }: { active: boolean }) {
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-40 cursor-default"
           />
-          <div className="absolute left-0 top-full mt-1 z-50 min-w-[160px] rounded-xl bg-white shadow-xl border border-border overflow-hidden py-1">
+          <div
+            className="fixed z-50 min-w-[160px] rounded-xl bg-white shadow-xl border border-border overflow-hidden py-1"
+            style={pos ? { left: pos.left, top: pos.top } : undefined}
+          >
             {MEMBERS_GROUP.items.map((item) => (
               <Link
                 key={item.href}

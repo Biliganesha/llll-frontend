@@ -6,9 +6,9 @@
 
 export const MISSION_JP = "蓮ノ空の物語を、ファンの手で伝統にする";
 export const MISSION_ID =
-  "Menjadikan cerita 蓮ノ空 sebagai tradisi, oleh tangan para penggemar";
+  "Menjadikan cerita Hasunosora sebagai tradisi, oleh tangan para penggemar";
 
-export const CONTACT_EMAIL = "safetyganesha@gmail.com";
+export const CONTACT_EMAIL = "faris.wa2099@gmail.com";
 
 export type AboutSection = {
   id: string;
@@ -26,7 +26,7 @@ export const ABOUT_SECTIONS: AboutSection[] = [
     contentJp:
       "「Link! Like! Library! Legacy!」（略称：LLLL）は、スマートフォン向けアプリ「Link! Like! ラブライブ！（リンクラ）」で紡がれてきた『ラブライブ！蓮ノ空女学院スクールアイドルクラブ』の物語を、未来へ残すための非営利ファンメイド・アーカイブです。2026年6月30日のサービス終了とともに失われてしまう活動記録やスクールアイドルコネクトの映像・ストーリーを記録し、ファンの手で語り継いで「伝統」にしていくことを目的としています。",
     contentId:
-      "“Link! Like! Library! Legacy!” (disingkat LLLL) adalah arsip fan-made non-profit untuk menyimpan kisah “Love Live! Hasunosora Gakuin School Idol Club” yang selama ini terjalin lewat aplikasi “Link! Like! Love Live! (Linkura)”, agar tetap lestari ke masa depan. Tujuannya merekam 活動記録 serta video dan cerita School Idol Connect yang akan hilang saat layanan berakhir pada 30 Juni 2026 — supaya kisah 蓮ノ空 terus diceritakan oleh tangan para penggemar hingga menjadi sebuah “tradisi”.",
+      "“Link! Like! Library! Legacy!” (disingkat LLLL) adalah arsip fan-made non-profit untuk menyimpan kisah “Love Live! Hasunosora Gakuin School Idol Club” yang selama ini terjalin lewat aplikasi “Link! Like! Love Live! (Linkura)”, agar tetap lestari ke masa depan. Tujuannya merekam Catatan Aktivitas (活動記録) serta video dan cerita School Idol Connect yang akan hilang saat layanan berakhir pada 30 Juni 2026 — supaya kisah Hasunosora terus diceritakan oleh tangan para penggemar hingga menjadi sebuah “tradisi”.",
   },
   {
     id: "disclaimer",
