@@ -148,42 +148,26 @@ export default function UnitDetailPage() {
     );
   }
 
-  const infoRows: { label: string; value: string }[] = [];
-  if (d.nameShort) infoRows.push({ label: translate("units.abbreviation", lang), value: d.nameShort });
-  if (d.debutDate) infoRows.push({ label: translate("units.formed", lang), value: formatDateLang(d.debutDate, lang) || d.debutDate });
-  if (d.songsCount) infoRows.push({ label: translate("units.songCount", lang), value: `${d.songsCount}曲` });
-
   const heroImage = d.imageGroup?.node.sourceUrl;
   const logoUrl = d.logo?.node.sourceUrl;
   const tagline = t(d.taglineJp, d.taglineId);
   const descHtml = t(d.descriptionJp, d.descriptionId);
   const backLabel = `← ${translate("nav.units", lang)}`;
 
+  // Banner ramping ala header wiki — identitas warna + judul; logo & data pindah ke infobox.
   const heroSection = (
     <div
-      className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden"
+      className="relative w-full h-28 sm:h-32 lg:h-36 rounded-2xl overflow-hidden"
       style={{ background: `linear-gradient(135deg, ${c.gradFrom} 0%, ${c.gradTo} 100%)` }}
     >
-      {heroImage ? (
-        <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center">
-          {logoUrl ? (
-            <div className="bg-white/40 backdrop-blur-sm rounded-2xl px-10 py-5 shadow-sm">
-              <img src={logoUrl} alt={d.nameJp} className="h-28 object-contain" />
-            </div>
-          ) : (
-            <span className="text-6xl font-bold text-white/15 tracking-wider select-none">{d.nameJp}</span>
-          )}
-        </div>
-      )}
+      {heroImage && <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />}
       <div
-        className="absolute inset-x-0 bottom-0 h-1/2"
+        className="absolute inset-x-0 bottom-0 h-2/3"
         style={{ background: `linear-gradient(to top, ${c.overlay}, transparent)` }}
       />
-      <div className="absolute bottom-4 left-4 right-4">
-        <h1 className="text-3xl font-extrabold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]">{d.nameJp}</h1>
-        <p className="text-sm text-white/85 drop-shadow">{d.nameRomaji}</p>
+      <div className="absolute bottom-3 left-4 right-4">
+        <h1 className="text-2xl lg:text-3xl font-extrabold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]">{d.nameJp}</h1>
+        <p className="text-xs lg:text-sm text-white/85 drop-shadow">{d.nameRomaji}</p>
       </div>
     </div>
   );
@@ -194,17 +178,36 @@ export default function UnitDetailPage() {
     </p>
   );
 
-  const infoSection = infoRows.length > 0 && (
+  // Infobox ala wikia (riset: Fandom Groups Infobox — gambar di atas, baris Nama/Romaji/Members/Debut)
+  const infoRow = (label: string, value: string | null | undefined) =>
+    value ? (
+      <div className="flex items-start px-4 py-2.5 text-sm border-t border-border">
+        <span className="text-text-dim w-24 shrink-0 pr-2">{label}</span>
+        <span className="font-medium min-w-0">{value}</span>
+      </div>
+    ) : null;
+  const infoSection = (
     <div className="mt-4 rounded-xl overflow-hidden border border-border">
-      {infoRows.map((row, i) => (
-        <div
-          key={row.label}
-          className={`flex items-center px-4 py-2.5 text-sm ${i > 0 ? "border-t border-border" : ""}`}
-        >
-          <span className="text-text-dim w-16 shrink-0">{row.label}</span>
-          <span className="font-medium">{row.value}</span>
+      {logoUrl && (
+        <div className="flex items-center justify-center bg-white py-5 px-4">
+          <img src={logoUrl} alt={`${d.nameJp} logo`} className="h-16 object-contain" />
         </div>
-      ))}
+      )}
+      <div className="px-4 py-1.5 text-xs font-bold text-white" style={{ background: c.accent }}>
+        {t("基本情報", "Profil Unit")}
+      </div>
+      {infoRow(t("名前", "Nama"), d.nameJp)}
+      {infoRow(t("ローマ字", "Romaji"), d.nameRomaji)}
+      {infoRow(translate("units.abbreviation", lang), d.nameShort)}
+      {infoRow(translate("units.formed", lang), formatDateLang(d.debutDate, lang))}
+      {infoRow(translate("units.members", lang), members.length ? `${members.length}人` : null)}
+      <div className="flex items-start px-4 py-2.5 text-sm border-t border-border">
+        <span className="text-text-dim w-24 shrink-0 pr-2">{t("カラー", "Warna")}</span>
+        <span className="font-medium inline-flex items-center gap-2">
+          <span className="inline-block w-4 h-4 rounded-full border border-border" style={{ background: c.color }} />
+          {c.color}
+        </span>
+      </div>
     </div>
   );
 
