@@ -4,6 +4,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useParams, useRouter } from "next/navigation";
 import { StatusBar } from "@/components/ui/StatusBar";
+import { SourcesList, withCitations } from "@/components/ui/SourcesList";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState } from "react";
@@ -78,6 +79,7 @@ const GET_CHARACTER = gql`
         triviaJp
         triviaId
         introVideoUrl
+        richSources
       }
     }
   }
@@ -145,6 +147,7 @@ type CharacterDetail = {
     triviaJp: string | null;
     triviaId: string | null;
     introVideoUrl: string | null;
+    richSources: string | null;
   } | null;
 };
 
@@ -367,7 +370,7 @@ export default function CharacterDetailPage() {
     return v ? (
       <div className="mt-4">
         <h2 className="text-base lg:text-xl font-bold mb-2 lg:mb-3" style={{ color }}>{translate(titleKey, lang)}</h2>
-        <div className="text-base lg:text-lg leading-relaxed text-foreground/80 whitespace-pre-line">{v}</div>
+        <div className="text-base lg:text-lg leading-relaxed text-foreground/80 whitespace-pre-line">{withCitations(v)}</div>
       </div>
     ) : null;
   };
@@ -383,6 +386,7 @@ export default function CharacterDetailPage() {
       {prose("characters.background", bd?.backgroundJp, bd?.backgroundId)}
       {prose("characters.relations", bd?.relationshipsJp, bd?.relationshipsId)}
       {prose("characters.trivia", bd?.triviaJp, bd?.triviaId)}
+      <SourcesList raw={bd?.richSources} accent={color} />
     </>
   );
 

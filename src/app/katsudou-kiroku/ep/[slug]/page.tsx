@@ -6,6 +6,7 @@ import { useQuery } from "@apollo/client/react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { StatusBar } from "@/components/ui/StatusBar";
+import { SourcesList, withCitations } from "@/components/ui/SourcesList";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { LinkuraPlayer } from "@/components/video/LinkuraPlayer";
@@ -41,6 +42,7 @@ type EpisodeDetail = {
     youtubeUrl: string | null;
     youtubeVideoId: string | null;
     summaryJp: string | null;
+    summaryId: string | null;
     hasSubtitleJp: boolean | null;
     hasSubtitleId: boolean | null;
     originalSource: string | null;
@@ -107,7 +109,7 @@ export default function EpisodeDetailPage() {
   const chapter = ep.episodeStructure?.chapter?.nodes?.[0] ?? null;
   const gen = ep.episodeStructure?.generation?.[0];
   const month = ep.episodeStructure?.storyMonth;
-  const summary = lang === "jp" ? d.summaryJp : d.summaryJp; // konten JP utama
+  const summary = lang === "jp" ? d.summaryJp : d.summaryId || d.summaryJp;
 
   // parts milik episode ini, urut by partNumber/menuOrder
   const parts = (data?.episodeParts?.nodes ?? [])
@@ -138,7 +140,7 @@ export default function EpisodeDetailPage() {
           {d.episodeNumber ? ` · 第${d.episodeNumber}話` : ""}
         </p>
         {summary && (
-          <p className="text-sm leading-relaxed text-foreground/80 mt-2">{summary}</p>
+          <p className="text-sm leading-relaxed text-foreground/80 mt-2">{withCitations(summary)}</p>
         )}
       </div>
     </div>
@@ -217,6 +219,7 @@ export default function EpisodeDetailPage() {
           {translate("episodes.originalSource", lang)}
         </a>
       )}
+      <SourcesList raw={ep.episodeStructure?.sources} accent="#8b82f5" />
       <CommentSection postDatabaseId={ep.databaseId} accentColor="#8b82f5" />
     </>
   );

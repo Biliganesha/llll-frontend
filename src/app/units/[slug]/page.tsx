@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useLanguage } from "@/lib/language";
 import { translate } from "@/lib/translations";
 import { unitDisplayColors, formatDateLang } from "@/lib/unit-colors";
+import { SourcesList, citeHtml } from "@/components/ui/SourcesList";
 
 const GET_UNIT = gql`
   query GetUnit($slug: ID!) {
@@ -32,6 +33,7 @@ const GET_UNIT = gql`
         debutDate
         songsCount
         officialUrl
+        sources
         logo {
           node {
             sourceUrl
@@ -100,6 +102,7 @@ type UnitDetail = {
     colorSecondary: string | null;
     debutDate: string | null;
     songsCount: number | null;
+    sources: string | null;
     officialUrl: string | null;
     logo: { node: { sourceUrl: string; altText: string } } | null;
     imageGroup: { node: { sourceUrl: string; altText: string } } | null;
@@ -215,8 +218,9 @@ export default function UnitDetailPage() {
     <div className="mt-4">
       <div
         className="text-sm leading-relaxed text-foreground/80"
-        dangerouslySetInnerHTML={{ __html: descHtml }}
+        dangerouslySetInnerHTML={{ __html: citeHtml(descHtml) }}
       />
+      <SourcesList raw={d.sources} accent={c.accent} />
     </div>
   ) : null;
 

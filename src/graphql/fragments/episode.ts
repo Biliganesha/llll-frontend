@@ -12,6 +12,7 @@ export const EPISODE_FIELDS = gql`
       youtubeVideoId
       durationSeconds
       summaryJp: ringkasanJp
+      summaryId: ringkasanId
       hasSubtitleJp: subtitleJpTersedia
       hasSubtitleId: subtitleIdTersedia
       originalSource: sumberAsliOfficialUrl
@@ -21,6 +22,7 @@ export const EPISODE_FIELDS = gql`
       generation
       storyMonth
       chapterOrder
+      sources
       heroImage {
         node {
           sourceUrl
@@ -44,6 +46,7 @@ export type EpisodeStructure = {
   generation: string[] | null;
   storyMonth: string | null;
   chapterOrder: number | null;
+  sources: string | null;
   heroImage: { node: { sourceUrl: string; altText: string } } | null;
   chapter: { nodes: { databaseId: number; title: string; slug: string }[] } | null;
 } | null;
