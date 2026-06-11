@@ -51,6 +51,6 @@ export const ABOUT_SECTIONS: AboutSection[] = [
 export const OFFICIAL_LINKS: { label: string; url: string }[] = [
   { label: "Love Live! 蓮ノ空 公式サイト", url: "https://www.lovelive-anime.jp/hasunosora/" },
   { label: "Link! Like! Love Live! 公式", url: "https://www.lovelive-anime.jp/llll/" },
-  { label: "蓮ノ空 公式 YouTube", url: "https://www.youtube.com/@hasunosora_official" },
+  { label: "蓮ノ空 公式 YouTube", url: "https://www.youtube.com/@lovelive_hasu" },
   { label: "蓮ノ空 公式 X (Twitter)", url: "https://x.com/hasunosora_SIC" },
 ];
