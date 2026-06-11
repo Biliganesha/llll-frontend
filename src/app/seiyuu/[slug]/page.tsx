@@ -120,6 +120,28 @@ export default function SeiyuuDetailPage() {
   const bioHtml = t(p.bioJp, p.bioId);
   const ch = p.character?.nodes?.[0] ?? null;
 
+  // Nilai profil tersimpan gabungan ("JP / Latin" atau "かな (Romaji)") — pilih sesuai bahasa.
+  const pick = (v: string | null | undefined): string | null => {
+    if (!v) return null;
+    if (v.includes(" / ")) {
+      const [jp, latin] = v.split(" / ");
+      return (lang === "jp" ? jp : latin).trim();
+    }
+    if (lang !== "jp") {
+      const m = v.match(/^(.+?)\s*[（(]([^()（）]+)[)）]$/);
+      if (m && /[぀-ヿ一-鿿]/.test(m[1])) return m[2].trim();
+    }
+    return v;
+  };
+  const MONTHS_ID = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const birth = (v: string | null | undefined): string | null => {
+    if (!v) return null;
+    const m = v.match(/(?:(\d{4})年)?(\d{1,2})月(\d{1,2})日/);
+    if (!m) return pick(v);
+    if (lang === "jp") return v;
+    return `${parseInt(m[3])} ${MONTHS_ID[parseInt(m[2]) - 1]}${m[1] ? ` ${m[1]}` : ""}`;
+  };
+
   type Row = { label: string; value: string };
   const row = (label: string, value: string | null | undefined): Row | null => (value ? { label, value } : null);
   const compact = (rs: (Row | null)[]) => rs.filter((r): r is Row => !!r);
@@ -127,17 +149,17 @@ export default function SeiyuuDetailPage() {
     {
       title: translate("characters.secBasic", lang),
       rows: compact([
-        row(translate("seiyuu.nickname", lang), p.nickname),
-        row(translate("seiyuu.agency", lang), p.agency),
+        row(translate("seiyuu.nickname", lang), pick(p.nickname)),
+        row(translate("seiyuu.agency", lang), pick(p.agency)),
       ]),
     },
     {
       title: translate("characters.secStats", lang),
       rows: compact([
-        row(translate("characters.birthday", lang), p.birthDate),
-        row(translate("seiyuu.origin", lang), p.origin),
+        row(translate("characters.birthday", lang), birth(p.birthDate)),
+        row(translate("seiyuu.origin", lang), pick(p.origin)),
         row(translate("characters.height", lang), p.height),
-        row(translate("seiyuu.occupation", lang), p.occupation),
+        row(translate("seiyuu.occupation", lang), pick(p.occupation)),
       ]),
     },
   ].filter((s) => s.rows.length > 0);
