@@ -112,7 +112,9 @@ function UnitCard({ unit }: { unit: UnitNode }) {
           <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />
         ) : logoUrl ? (
           <div className="w-full h-full flex items-center justify-center">
-            <img src={logoUrl} alt={d.nameJp} className="h-12 object-contain opacity-80" />
+            <div className="bg-white/40 backdrop-blur-sm rounded-2xl px-7 py-4 shadow-sm">
+              <img src={logoUrl} alt={d.nameJp} className="h-20 object-contain" />
+            </div>
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">

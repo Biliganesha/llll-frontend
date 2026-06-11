@@ -169,7 +169,9 @@ export default function UnitDetailPage() {
       ) : (
         <div className="w-full h-full flex items-center justify-center">
           {logoUrl ? (
-            <img src={logoUrl} alt={d.nameJp} className="h-20 object-contain opacity-80" />
+            <div className="bg-white/40 backdrop-blur-sm rounded-2xl px-10 py-5 shadow-sm">
+              <img src={logoUrl} alt={d.nameJp} className="h-28 object-contain" />
+            </div>
           ) : (
             <span className="text-6xl font-bold text-white/15 tracking-wider select-none">{d.nameJp}</span>
           )}
