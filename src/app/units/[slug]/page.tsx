@@ -11,6 +11,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/language";
 import { translate } from "@/lib/translations";
+import { unitDisplayColors, formatDateLang } from "@/lib/unit-colors";
 
 const GET_UNIT = gql`
   query GetUnit($slug: ID!) {
@@ -121,8 +122,7 @@ export default function UnitDetailPage() {
 
   const u = data?.unit;
   const d = u?.unitDetails;
-  const color = d?.colorPrimary || "#8b82f5";
-  const color2 = d?.colorSecondary || color;
+  const c = unitDisplayColors(d?.colorPrimary, d?.colorSecondary);
   const members = d?.members?.nodes ?? [];
 
   if (loading) {
@@ -150,7 +150,7 @@ export default function UnitDetailPage() {
 
   const infoRows: { label: string; value: string }[] = [];
   if (d.nameShort) infoRows.push({ label: translate("units.abbreviation", lang), value: d.nameShort });
-  if (d.debutDate) infoRows.push({ label: translate("units.formed", lang), value: d.debutDate });
+  if (d.debutDate) infoRows.push({ label: translate("units.formed", lang), value: formatDateLang(d.debutDate, lang) || d.debutDate });
   if (d.songsCount) infoRows.push({ label: translate("units.songCount", lang), value: `${d.songsCount}曲` });
 
   const heroImage = d.imageGroup?.node.sourceUrl;
@@ -162,7 +162,7 @@ export default function UnitDetailPage() {
   const heroSection = (
     <div
       className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden"
-      style={{ background: `linear-gradient(135deg, ${color} 0%, ${color2} 100%)` }}
+      style={{ background: `linear-gradient(135deg, ${c.gradFrom} 0%, ${c.gradTo} 100%)` }}
     >
       {heroImage ? (
         <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />
@@ -171,23 +171,23 @@ export default function UnitDetailPage() {
           {logoUrl ? (
             <img src={logoUrl} alt={d.nameJp} className="h-20 object-contain opacity-80" />
           ) : (
-            <span className="text-6xl font-bold text-white/30">{d.nameJp}</span>
+            <span className="text-6xl font-bold text-white/15 tracking-wider select-none">{d.nameJp}</span>
           )}
         </div>
       )}
       <div
         className="absolute inset-x-0 bottom-0 h-1/2"
-        style={{ background: `linear-gradient(to top, ${color}cc, transparent)` }}
+        style={{ background: `linear-gradient(to top, ${c.overlay}, transparent)` }}
       />
       <div className="absolute bottom-4 left-4 right-4">
-        <h1 className="text-2xl font-bold text-white drop-shadow-lg">{d.nameJp}</h1>
-        <p className="text-sm text-white/80">{d.nameRomaji}</p>
+        <h1 className="text-3xl font-extrabold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]">{d.nameJp}</h1>
+        <p className="text-sm text-white/85 drop-shadow">{d.nameRomaji}</p>
       </div>
     </div>
   );
 
   const taglineSection = tagline && (
-    <p className="text-center italic text-sm mt-4" style={{ color }}>
+    <p className="text-center italic text-sm mt-4" style={{ color: c.accent }}>
       「{tagline}」
     </p>
   );
@@ -217,7 +217,7 @@ export default function UnitDetailPage() {
 
   const membersSection = (cols: number) => (
     <div className="mt-6">
-      <h2 className="text-base font-bold mb-3" style={{ color }}>
+      <h2 className="text-base font-bold mb-3" style={{ color: c.accent }}>
         {translate("units.members", lang)} ({members.length})
       </h2>
       <div className={`grid grid-cols-${cols} gap-3`}>

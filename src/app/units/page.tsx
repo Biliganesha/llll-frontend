@@ -8,7 +8,8 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
-import { useTr } from "@/lib/language";
+import { useLanguage, useTr } from "@/lib/language";
+import { unitDisplayColors, formatDateLang } from "@/lib/unit-colors";
 
 const GET_UNITS = gql`
   query GetUnits {
@@ -26,6 +27,7 @@ const GET_UNITS = gql`
           debutDate
           songsCount
           taglineJp
+          taglineId
           logo {
             node {
               sourceUrl
@@ -78,6 +80,7 @@ type UnitNode = {
     debutDate: string | null;
     songsCount: number | null;
     taglineJp: string | null;
+    taglineId: string | null;
     logo: { node: { sourceUrl: string } } | null;
     imageGroup: { node: { sourceUrl: string } } | null;
     members: { nodes: MemberNode[] } | null;
@@ -89,8 +92,8 @@ type QueryData = { units: { nodes: UnitNode[] } };
 function UnitCard({ unit }: { unit: UnitNode }) {
   const d = unit.unitDetails;
   const tr = useTr();
-  const color = d.colorPrimary || "#8b82f5";
-  const color2 = d.colorSecondary || color;
+  const { lang } = useLanguage();
+  const c = unitDisplayColors(d.colorPrimary, d.colorSecondary);
   const members = d.members?.nodes ?? [];
   const heroImage = d.imageGroup?.node.sourceUrl;
   const logoUrl = d.logo?.node.sourceUrl;
@@ -103,7 +106,7 @@ function UnitCard({ unit }: { unit: UnitNode }) {
       {/* Hero */}
       <div
         className="relative aspect-[2/1]"
-        style={{ background: `linear-gradient(135deg, ${color} 0%, ${color2} 100%)` }}
+        style={{ background: `linear-gradient(135deg, ${c.gradFrom} 0%, ${c.gradTo} 100%)` }}
       >
         {heroImage ? (
           <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />
@@ -113,30 +116,30 @@ function UnitCard({ unit }: { unit: UnitNode }) {
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-3xl font-bold text-white/30">{tr(d.nameJp, d.nameRomaji)}</span>
+            <span className="text-3xl font-bold text-white/15 tracking-wider select-none">{tr(d.nameJp, d.nameRomaji)}</span>
           </div>
         )}
 
         {/* Gradient overlay */}
         <div
           className="absolute inset-x-0 bottom-0 h-1/2"
-          style={{ background: `linear-gradient(to top, ${color}cc, transparent)` }}
+          style={{ background: `linear-gradient(to top, ${c.overlay}, transparent)` }}
         />
 
         {/* Unit name */}
         <div className="absolute bottom-3 left-3 right-3">
-          <h2 className="text-lg font-bold text-white drop-shadow-lg group-hover:scale-[1.02] transition-transform origin-left">
+          <h2 className="text-xl font-extrabold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)] group-hover:scale-[1.02] transition-transform origin-left">
             {tr(d.nameJp, d.nameRomaji)}
           </h2>
-          <p className="text-xs text-white/70">{tr(d.nameRomaji, d.nameJp)}</p>
+          <p className="text-xs text-white/85 drop-shadow">{tr(d.nameRomaji, d.nameJp)}</p>
         </div>
       </div>
 
       {/* Info */}
       <div className="px-3 py-3 bg-white">
-        {d.taglineJp && (
-          <p className="text-xs italic mb-2" style={{ color }}>
-            「{d.taglineJp}」
+        {(d.taglineJp || d.taglineId) && (
+          <p className="text-xs italic mb-2" style={{ color: c.accent }}>
+            「{tr(d.taglineJp || "", d.taglineId || d.taglineJp || "")}」
           </p>
         )}
 
@@ -156,7 +159,7 @@ function UnitCard({ unit }: { unit: UnitNode }) {
                   <div
                     key={m.databaseId}
                     className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-white text-[10px] font-bold"
-                    style={{ background: color }}
+                    style={{ background: c.accent }}
                   >
                     {m.characterDetails.nameJp[0]}
                   </div>
@@ -171,7 +174,7 @@ function UnitCard({ unit }: { unit: UnitNode }) {
 
         {/* Meta row */}
         <div className="flex items-center gap-3 mt-2 text-[11px] text-text-dim">
-          {d.debutDate && <span>{d.debutDate}</span>}
+          {d.debutDate && <span>{formatDateLang(d.debutDate, lang)}</span>}
           {d.songsCount && <span>{d.songsCount}曲</span>}
         </div>
       </div>
