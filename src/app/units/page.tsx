@@ -109,7 +109,7 @@ function UnitCard({ unit }: { unit: UnitNode }) {
         style={{ background: `linear-gradient(135deg, ${c.gradFrom} 0%, ${c.gradTo} 100%)` }}
       >
         {heroImage ? (
-          <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />
+          <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover object-top" />
         ) : logoUrl ? (
           <div className="w-full h-full flex items-center justify-center">
             <div className="bg-white/40 backdrop-blur-sm rounded-2xl px-7 py-4 shadow-sm">
