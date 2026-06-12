@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/lib/language";
+import { unitDisplayColors } from "@/lib/unit-colors";
 
 type CharacterCardProps = {
   slug: string;
@@ -68,15 +69,22 @@ export function CharacterCard({
           </div>
         )}
 
-        {/* Unit badge */}
-        {unitDisplay && (
-          <div
-            className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm"
-            style={{ background: unitColor || color }}
-          >
-            {unitDisplay}
-          </div>
-        )}
+        {/* Unit badge — warna unit terang (Edel Note putih) butuh teks gelap + tepi agar terbaca */}
+        {unitDisplay && (() => {
+          const bc = unitDisplayColors(unitColor || color);
+          return (
+            <div
+              className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm"
+              style={{
+                background: bc.color,
+                color: bc.isLight ? "#475569" : "#fff",
+                border: bc.isLight ? "1px solid #cbd5e1" : "none",
+              }}
+            >
+              {unitDisplay}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Info area */}

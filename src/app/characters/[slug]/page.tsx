@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/client/react";
 import { useParams, useRouter } from "next/navigation";
 import { StatusBar } from "@/components/ui/StatusBar";
 import { SourcesList, withCitations } from "@/components/ui/SourcesList";
+import { unitDisplayColors } from "@/lib/unit-colors";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState } from "react";
@@ -422,7 +423,18 @@ export default function CharacterDetailPage() {
   );
 
   const unitBadge = unit ? (
-    <Link href={`/units/${unit.slug}`} className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-xs font-medium text-white" style={{ background: unit.unitDetails.colorPrimary || color }}>
+    <Link
+      href={`/units/${unit.slug}`}
+      className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-xs font-medium"
+      style={(() => {
+        const bc = unitDisplayColors(unit.unitDetails.colorPrimary || color);
+        return {
+          background: bc.color,
+          color: bc.isLight ? "#475569" : "#fff",
+          border: bc.isLight ? "1px solid #cbd5e1" : "none",
+        };
+      })()}
+    >
       {unitDisplay}
     </Link>
   ) : null;

@@ -9,6 +9,7 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/language";
+import { unitDisplayColors } from "@/lib/unit-colors";
 
 const GET_CHARACTERS_PAGE = gql`
   query GetCharactersPage {
@@ -305,6 +306,8 @@ function FilterChip({
   active: boolean;
   onClick: () => void;
 }) {
+  // warna unit terang (Edel Note putih): pakai aksen gelap agar chip tetap terbaca
+  const c = color ? unitDisplayColors(color) : null;
   return (
     <button
       onClick={onClick}
@@ -313,12 +316,13 @@ function FilterChip({
         active
           ? {
               background: color || "var(--linkura-primary)",
-              color: "#fff",
-              boxShadow: `0 2px 8px ${color || "var(--linkura-primary)"}40`,
+              color: c?.isLight ? "#475569" : "#fff",
+              border: c?.isLight ? "1px solid #cbd5e1" : "1px solid transparent",
+              boxShadow: `0 2px 8px ${(c?.isLight ? c.accent : color) || "var(--linkura-primary)"}40`,
             }
           : {
               background: "var(--linkura-surface)",
-              color: color || "var(--linkura-text-dim)",
+              color: (c?.isLight ? c.accent : color) || "var(--linkura-text-dim)",
               border: `1px solid var(--linkura-border)`,
             }
       }

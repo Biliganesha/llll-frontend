@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/lib/language";
+import { unitDisplayColors } from "@/lib/unit-colors";
 
 const GET_SUKUKONE = gql`
   query GetSukukoneVideos {
@@ -567,6 +568,8 @@ function FilterChip({
   onClick: () => void;
   small?: boolean;
 }) {
+  // warna unit terang (Edel Note putih): teks gelap + tepi agar chip aktif terbaca
+  const c = color ? unitDisplayColors(color) : null;
   return (
     <button
       onClick={onClick}
@@ -574,10 +577,16 @@ function FilterChip({
         small ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"
       } ${
         active
-          ? "text-white border-transparent"
+          ? c?.isLight ? "" : "text-white border-transparent"
           : "text-text-dim border-border hover:border-primary/40 hover:text-foreground bg-white"
       }`}
-      style={active ? { background: color || "var(--linkura-primary)" } : undefined}
+      style={
+        active
+          ? c?.isLight
+            ? { background: c.color, color: "#475569", borderColor: "#cbd5e1" }
+            : { background: color || "var(--linkura-primary)" }
+          : undefined
+      }
     >
       {label}
     </button>
