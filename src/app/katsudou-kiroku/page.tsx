@@ -66,7 +66,7 @@ export default function KatsudouKirokuPage() {
         <StatusBar episodeCount={chapters.length} unitLabel={tr("活動記録", "Catatan Aktivitas")} />
         <header className="px-3 pt-3 pb-1">
           <h1 className="text-lg font-bold brand-gradient-text">{tr("活動記録", "Catatan Aktivitas")}</h1>
-          <p className="text-[11px] text-text-dim">{tr("蓮ノ空の物語 — 章で読む", "Kisah 蓮ノ空 — dibaca per bab")}</p>
+          <p className="text-[11px] text-text-dim">{tr("蓮ノ空の物語 — 章で読む", "Kisah Hasunosora — dibaca per bab")}</p>
         </header>
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">{body}</main>
         <BottomNav
@@ -82,7 +82,7 @@ export default function KatsudouKirokuPage() {
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
         <header className="px-6 pt-6 pb-2">
           <h1 className="text-2xl font-bold brand-gradient-text">{tr("活動記録", "Catatan Aktivitas")}</h1>
-          <p className="text-xs text-text-dim mt-0.5">{tr("蓮ノ空の物語 — 章で読む", "Kisah 蓮ノ空 — dibaca per bab")}</p>
+          <p className="text-xs text-text-dim mt-0.5">{tr("蓮ノ空の物語 — 章で読む", "Kisah Hasunosora — dibaca per bab")}</p>
         </header>
         <main className="flex-1 px-6 pt-4 pb-8 max-w-3xl mx-auto w-full">{body}</main>
       </div>
@@ -91,7 +91,7 @@ export default function KatsudouKirokuPage() {
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <header className="max-w-4xl mx-auto w-full px-8 pt-8 pb-2">
           <h1 className="text-3xl font-bold brand-gradient-text">{tr("活動記録", "Catatan Aktivitas")}</h1>
-          <p className="text-sm text-text-dim mt-1">{tr("蓮ノ空の物語 — 章で読む", "Kisah 蓮ノ空 — dibaca per bab")}</p>
+          <p className="text-sm text-text-dim mt-1">{tr("蓮ノ空の物語 — 章で読む", "Kisah Hasunosora — dibaca per bab")}</p>
         </header>
         <main className="max-w-4xl mx-auto w-full px-8 pt-4 pb-10 flex-1">{body}</main>
       </div>

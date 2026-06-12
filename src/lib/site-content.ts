@@ -41,10 +41,11 @@ export const ABOUT_SECTIONS: AboutSection[] = [
     id: "rights-holders",
     titleJp: "権利者の皆様へ",
     titleId: "Kepada Pemegang Hak Cipta",
+    // Teks revisi atasan (2026-06-11) — nada penuh harapan + membuka ruang diskusi/nego.
     contentJp:
-      "私たちは権利者の皆様の権利を最大限に尊重いたします。本サイトの内容に問題がある場合、または掲載コンテンツの削除をご希望の場合は、下記の連絡先までご連絡ください。確認のうえ、速やかに対応・削除いたします。コンテンツの公開は、公式の活動を応援し、より多くの方に作品の魅力を知っていただきたいという願いから行っているものです。",
+      "蓮ノ空女学院スクールアイドルクラブの物語を生み出してくださった制作者の皆様、そして著作権者の皆様に、心の底から感謝申し上げます。この素晴らしい作品との出会いは、私たちにとって小さな奇跡のように感じられ、心から幸せに思っております。\n\nこのウェブサイトは、蓮ノ空女学院スクールアイドルクラブという物語への愛と感謝の気持ちから、純粋な想いで生まれたものです。蓮ノ空が描く「伝統」というテーマは、私たちの心に深く響きました。ファンとして、私たちはこの「伝統」の翼を広げ、これからも多くの方々に知っていただき、感じていただけることを願っております。\n\nこのウェブサイトは、Odd Number、Bushiroad、その他関係者の皆様とは一切関係がなく、非営利で運営されております。いかなる形でも収益を得ることはなく、掲載されているすべてのコンテンツの著作権は、正当な権利者の皆様に帰属いたします。\n\n私たちは著作権者の皆様への敬意を持って、このウェブサイトを運営しております。本サイトおよび掲載内容に関してお話しいただきたいことがございましたら、いつでも歓迎いたします。皆様との繋がりを大切に、下記の連絡先までお気軽にご連絡くださいませ。",
     contentId:
-      "Kami menghormati sepenuhnya hak para pemegang hak cipta. Apabila terdapat konten di website ini yang dianggap bermasalah, atau Anda menghendaki penghapusannya, silakan hubungi kontak di bawah ini. Kami akan memeriksa dan segera menindaklanjuti maupun menghapusnya. Penyajian konten ini dilakukan dengan harapan dapat mendukung kegiatan resmi dan memperkenalkan pesona karya kepada lebih banyak orang.",
+      "Dengan sepenuh hati, kami menyampaikan rasa terima kasih yang sebesar-besarnya kepada para kreator dan pemegang hak cipta yang telah menghadirkan kisah 蓮ノ空女学院スクールアイドルクラブ ke dunia. Pertemuan kami dengan karya yang luar biasa ini terasa seperti sebuah keajaiban kecil yang sangat kami syukuri.\n\nWebsite ini lahir murni dari rasa cinta dan syukur kami terhadap kisah 蓮ノ空女学院スクールアイドルクラブ. Tema 「伝統」 (Tradisi) yang diusungnya begitu menyentuh hati kami. Sebagai penggemar, kami ingin mengembangkan sayap \"Tradisi\" itu agar dapat terus dikenal dan dirasakan oleh lebih banyak orang di masa depan.\n\nWebsite ini tidak berafiliasi dengan pihak manapun, baik Odd Number, Bushiroad, maupun pihak terkait lainnya. Website ini bersifat non-profit, tidak memungut biaya maupun menerima keuntungan dalam bentuk apapun dari pihak manapun. Seluruh konten yang ditampilkan adalah hak cipta dari pemilik dan pemegang hak yang sah.\n\nKami menjalankan website ini dengan penuh rasa hormat terhadap para pemegang hak cipta. Apabila terdapat hal yang perlu didiskusikan terkait website ini maupun konten yang ditampilkan, kami dengan senang hati membuka diri untuk terhubung dan berdiskusi bersama. Silakan hubungi kami melalui kontak yang tersedia di bawah ini.",
   },
 ];
 

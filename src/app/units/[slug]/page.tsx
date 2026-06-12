@@ -200,7 +200,8 @@ export default function UnitDetailPage() {
         )}
         <h1 className="text-3xl lg:text-4xl font-extrabold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">{d.nameJp}</h1>
         <p className="text-sm text-white/90 drop-shadow">
-          {d.nameRomaji && d.nameRomaji !== d.nameJp ? `${d.nameRomaji} · ` : ""}{members.length}人
+          {d.nameRomaji && d.nameRomaji !== d.nameJp ? `${d.nameRomaji} · ` : ""}
+          {t(`${members.length}人`, `${members.length} anggota`)}
         </p>
       </div>
     </div>
@@ -237,7 +238,7 @@ export default function UnitDetailPage() {
       {infoRow(t("ローマ字", "Romaji"), d.nameRomaji)}
       {infoRow(translate("units.abbreviation", lang), d.nameShort)}
       {infoRow(translate("units.formed", lang), formatDateLang(d.debutDate, lang))}
-      {infoRow(translate("units.members", lang), members.length ? `${members.length}人` : null)}
+      {infoRow(translate("units.members", lang), members.length ? t(`${members.length}人`, `${members.length} anggota`) : null)}
       <div className="flex items-start px-4 py-2.5 text-sm border-t border-border">
         <span className="text-text-dim w-24 shrink-0 pr-2">{t("カラー", "Warna")}</span>
         <span className="font-medium inline-flex items-center gap-2">

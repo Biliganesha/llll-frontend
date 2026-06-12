@@ -43,7 +43,7 @@ export default function AboutPage() {
             <h2 className="text-sm font-bold">{t(section.titleJp, section.titleId)}</h2>
           </div>
           <div className="px-4 py-3">
-            <p className="text-sm leading-relaxed text-foreground/80">
+            <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">
               {t(section.contentJp, section.contentId)}
             </p>
           </div>

@@ -92,7 +92,7 @@ export function FirstVisitModal() {
 
               <section>
                 <h3 className="text-sm font-bold mb-1">{t(rights.titleJp, rights.titleId)}</h3>
-                <p className="text-xs leading-relaxed text-foreground/80">
+                <p className="text-xs leading-relaxed text-foreground/80 whitespace-pre-line">
                   {t(rights.contentJp, rights.contentId)}
                 </p>
               </section>

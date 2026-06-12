@@ -49,6 +49,11 @@ const GET_UNITS = gql`
                       sourceUrl
                     }
                   }
+                  imageChibi {
+                    node {
+                      sourceUrl
+                    }
+                  }
                 }
               }
             }
@@ -64,6 +69,7 @@ type MemberNode = {
   characterDetails: {
     nameJp: string;
     imageMain: { node: { sourceUrl: string } } | null;
+    imageChibi: { node: { sourceUrl: string } } | null;
   };
 };
 
@@ -149,13 +155,15 @@ function UnitCard({ unit }: { unit: UnitNode }) {
         {members.length > 0 && (
           <div className="flex items-center gap-1">
             <div className="flex -space-x-2">
-              {members.slice(0, 5).map((m) => (
-                m.characterDetails.imageMain?.node.sourceUrl ? (
+              {members.slice(0, 5).map((m) => {
+                // ikon chibi resmi untuk lingkaran kecil; artwork full-body tidak terbaca di 28px
+                const icon = m.characterDetails.imageChibi?.node.sourceUrl || null;
+                return icon ? (
                   <img
                     key={m.databaseId}
-                    src={m.characterDetails.imageMain.node.sourceUrl}
+                    src={icon}
                     alt={m.characterDetails.nameJp}
-                    className="w-7 h-7 rounded-full border-2 border-white object-cover"
+                    className="w-7 h-7 rounded-full border-2 border-white object-contain bg-white"
                   />
                 ) : (
                   <div
@@ -165,11 +173,11 @@ function UnitCard({ unit }: { unit: UnitNode }) {
                   >
                     {m.characterDetails.nameJp[0]}
                   </div>
-                )
-              ))}
+                );
+              })}
             </div>
             <span className="text-[11px] text-text-dim ml-1">
-              {members.length}人
+              {tr(`${members.length}人`, `${members.length} anggota`)}
             </span>
           </div>
         )}
@@ -177,7 +185,7 @@ function UnitCard({ unit }: { unit: UnitNode }) {
         {/* Meta row */}
         <div className="flex items-center gap-3 mt-2 text-[11px] text-text-dim">
           {d.debutDate && <span>{formatDateLang(d.debutDate, lang)}</span>}
-          {d.songsCount && <span>{d.songsCount}曲</span>}
+          {d.songsCount && <span>{tr(`${d.songsCount}曲`, `${d.songsCount} lagu`)}</span>}
         </div>
       </div>
     </Link>

@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 const siteUrl = "https://llll-frontend.vercel.app";
 const siteName = "LLLL — 蓮ノ空アーカイブ";
 const siteDescription =
-  "Link! Like! Library! Legacy! — Arsip non-profit fan-made untuk story Love Live! Hasu no Sora (蓮ノ空). Melestarikan kenangan dari Link! Like! Love Live! (リンクラ) sebelum 30 Juni 2026.";
+  "Link! Like! Library! Legacy! — Arsip non-profit fan-made untuk story Love Live! Hasunosora (蓮ノ空). Melestarikan kenangan dari Link! Like! Love Live! (リンクラ) sebelum 30 Juni 2026.";
 
 export const metadata: Metadata = {
   title: {
