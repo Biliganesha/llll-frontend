@@ -157,20 +157,51 @@ export default function UnitDetailPage() {
   const descHtml = t(d.descriptionJp, d.descriptionId);
   const backLabel = `← ${translate("nav.units", lang)}`;
 
-  // Banner ramping ala header wiki — identitas warna + judul; logo & data pindah ke infobox.
+  // Banner ala key visual grup resmi: barisan artwork member di kanan,
+  // watermark logo samar, scrim kiri untuk nama. (Feedback: jangan cuma gradien + teks.)
+  const lineup = members
+    .map((m) => m.characterDetails.imageMain?.node.sourceUrl)
+    .filter((u): u is string => !!u);
   const heroSection = (
     <div
-      className="relative w-full h-28 sm:h-32 lg:h-36 rounded-2xl overflow-hidden"
+      className="relative w-full h-44 sm:h-52 lg:h-60 rounded-2xl overflow-hidden"
       style={{ background: `linear-gradient(135deg, ${c.gradFrom} 0%, ${c.gradTo} 100%)` }}
     >
-      {heroImage && <img src={heroImage} alt={d.nameJp} className="w-full h-full object-cover" />}
+      {logoUrl && (
+        <img
+          src={logoUrl}
+          alt=""
+          aria-hidden
+          className="absolute -right-4 -top-4 h-2/3 opacity-10 -rotate-6 select-none pointer-events-none"
+        />
+      )}
+      {lineup.length > 0 && (
+        <div className="absolute inset-y-0 right-1 sm:right-6 flex items-end">
+          {lineup.map((u, i) => (
+            <img
+              key={i}
+              src={u}
+              alt=""
+              className={`h-[94%] w-auto object-contain object-bottom drop-shadow-lg ${i > 0 ? "-ml-8 sm:-ml-10" : ""}`}
+              style={{ zIndex: 10 - i }}
+            />
+          ))}
+        </div>
+      )}
       <div
-        className="absolute inset-x-0 bottom-0 h-2/3"
-        style={{ background: `linear-gradient(to top, ${c.overlay}, transparent)` }}
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(90deg, rgba(15,23,42,0.55) 0%, rgba(15,23,42,0.22) 45%, transparent 72%)" }}
       />
-      <div className="absolute bottom-3 left-4 right-4">
-        <h1 className="text-2xl lg:text-3xl font-extrabold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]">{d.nameJp}</h1>
-        <p className="text-xs lg:text-sm text-white/85 drop-shadow">{d.nameRomaji}</p>
+      <div className="absolute bottom-4 left-5 right-4 z-20">
+        {logoUrl && (
+          <div className="inline-block bg-white/90 rounded-lg px-3 py-1.5 mb-2 shadow-sm">
+            <img src={logoUrl} alt={`${d.nameJp} logo`} className="h-7 object-contain" />
+          </div>
+        )}
+        <h1 className="text-3xl lg:text-4xl font-extrabold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">{d.nameJp}</h1>
+        <p className="text-sm text-white/90 drop-shadow">
+          {d.nameRomaji && d.nameRomaji !== d.nameJp ? `${d.nameRomaji} · ` : ""}{members.length}人
+        </p>
       </div>
     </div>
   );
@@ -191,11 +222,14 @@ export default function UnitDetailPage() {
     ) : null;
   const infoSection = (
     <div className="mt-4 rounded-xl overflow-hidden border border-border">
-      {logoUrl && (
+      {heroImage ? (
+        // visual resmi unit (pola infobox Fandom: gambar grup di puncak)
+        <img src={heroImage} alt={`${d.nameJp} visual`} className="w-full aspect-square object-cover bg-white" />
+      ) : logoUrl ? (
         <div className="flex items-center justify-center bg-white py-5 px-4">
           <img src={logoUrl} alt={`${d.nameJp} logo`} className="h-16 object-contain" />
         </div>
-      )}
+      ) : null}
       <div className="px-4 py-1.5 text-xs font-bold text-white" style={{ background: c.accent }}>
         {t("基本情報", "Profil Unit")}
       </div>
