@@ -12,6 +12,7 @@ import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useLanguage } from "@/lib/language";
 import { CHAPTER_FIELDS, type ChapterNode } from "@/graphql/fragments/chapter";
 import { EPISODE_FIELDS, type EpisodeStructure } from "@/graphql/fragments/episode";
+import { StoryDigestModal } from "@/components/katsudou/StoryDigestModal";
 
 const GET_CHAPTER = gql`
   ${CHAPTER_FIELDS}
@@ -38,6 +39,7 @@ type EpisodeNode = {
     youtubeVideoId: string | null;
     durationSeconds: number | null;
     summaryJp: string | null;
+    summaryId: string | null;
   };
   episodeStructure: EpisodeStructure;
 };
@@ -64,6 +66,7 @@ export default function ChapterDetailPage() {
   const router = useRouter();
   const chapterSlug = params.chapter as string;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [digestOpen, setDigestOpen] = useState(false);
   const [selectedGen, setSelectedGen] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const { lang } = useLanguage();
@@ -93,6 +96,19 @@ export default function ChapterDetailPage() {
       (!selectedGen || genOf(ep) === selectedGen) &&
       (!selectedMonth || monthOf(ep) === selectedMonth)
   );
+
+  // → NOW: episode terdekat real-time = rilis terakhir yang ≤ hari ini (fallback: episode terakhir).
+  const today = new Date();
+  const nowEpisode =
+    [...ordered]
+      .filter((ep) => ep.episodeDetails.releaseDate && new Date(ep.episodeDetails.releaseDate) <= today)
+      .sort(
+        (a, b) =>
+          new Date(b.episodeDetails.releaseDate as string).getTime() -
+          new Date(a.episodeDetails.releaseDate as string).getTime()
+      )[0] ||
+    ordered[ordered.length - 1] ||
+    null;
 
   const color = chapter?.chapterDetails.colorTheme || "var(--linkura-primary)";
   const label =
@@ -212,6 +228,29 @@ export default function ChapterDetailPage() {
               </div>
             )}
           </div>
+
+          {/* Aksi ala app: Story Digest (kiri) + → NOW (kanan) */}
+          {ordered.length > 0 && (
+            <div className="mt-4 flex items-center gap-3">
+              <button
+                onClick={() => setDigestOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-white shadow-sm hover:opacity-90 transition"
+                style={{ background: "linear-gradient(135deg,#6a7bff,#a88dff)" }}
+              >
+                🎬 {tr("ストーリーダイジェスト", "Story Digest")}
+              </button>
+              <div className="flex-1" />
+              {nowEpisode && (
+                <button
+                  onClick={() => router.push(`/katsudou-kiroku/ep/${nowEpisode.slug}`)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border transition hover:bg-surface-2"
+                  style={{ borderColor: color, color }}
+                >
+                  {tr("最新へ", "Terbaru")} <span aria-hidden>→ NOW</span>
+                </button>
+              )}
+            </div>
+          )}
         </>
       )}
     </>
@@ -241,6 +280,8 @@ export default function ChapterDetailPage() {
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
         <main className="max-w-4xl mx-auto w-full px-8 py-8 flex-1">{body}</main>
       </div>
+
+      <StoryDigestModal open={digestOpen} onClose={() => setDigestOpen(false)} />
     </>
   );
 }
@@ -254,7 +295,10 @@ function EpisodeBigCard({ episode, accent }: { episode: EpisodeNode; accent: str
       : null);
   const gen = episode.episodeStructure?.generation?.[0];
   const month = episode.episodeStructure?.storyMonth;
-  const summary = episode.episodeDetails.summaryJp;
+  const summary =
+    lang === "jp"
+      ? episode.episodeDetails.summaryJp
+      : episode.episodeDetails.summaryId || episode.episodeDetails.summaryJp;
 
   return (
     <Link
@@ -291,7 +335,7 @@ function EpisodeBigCard({ episode, accent }: { episode: EpisodeNode; accent: str
       {summary && (
         <div className="px-3 py-2 bg-white">
           <p className="text-[11px] text-foreground/70 leading-snug line-clamp-2">
-            {lang === "jp" ? summary : summary}
+            {summary}
           </p>
         </div>
       )}
