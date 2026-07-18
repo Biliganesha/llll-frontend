@@ -12,6 +12,8 @@ type LinkuraPlayerProps = {
   thumbnailUrl?: string;
   hasSubtitleJp?: boolean;
   hasSubtitleId?: boolean;
+  /** Mulai putar otomatis saat mount (dipakai PartPlayer setelah pop-up 再生確認 OK). */
+  autoPlay?: boolean;
 };
 
 /**
@@ -140,6 +142,7 @@ function YouTubeLinkuraPlayer({
   thumbnailUrl,
   hasSubtitleJp,
   hasSubtitleId,
+  autoPlay,
 }: LinkuraPlayerProps & { videoId: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
@@ -224,6 +227,17 @@ function YouTubeLinkuraPlayer({
       }
     };
   }, [stopProgressTracking]);
+
+  // Autostart bila diminta (PartPlayer → setelah pop-up 再生確認 OK).
+  const didAutoStart = useRef(false);
+  useEffect(() => {
+    if (autoPlay && !didAutoStart.current) {
+      didAutoStart.current = true;
+      setStarted(true);
+      const id = setTimeout(initPlayer, 50);
+      return () => clearTimeout(id);
+    }
+  }, [autoPlay, initPlayer]);
 
   const handlePlay = () => {
     if (!started) {

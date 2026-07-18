@@ -10,6 +10,7 @@ import { SourcesList, withCitations } from "@/components/ui/SourcesList";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { LinkuraPlayer } from "@/components/video/LinkuraPlayer";
+import { PartPlayer } from "@/components/katsudou/PartPlayer";
 import { CommentSection } from "@/components/comments/CommentSection";
 import { useLanguage } from "@/lib/language";
 import { translate } from "@/lib/translations";
@@ -60,12 +61,6 @@ function formatDate(iso: string | null): string {
   if (!iso) return "—";
   const d = new Date(iso);
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
-}
-function formatDuration(seconds: number | null): string {
-  if (!seconds) return "";
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}分${s > 0 ? `${s}秒` : ""}`;
 }
 
 export default function EpisodeDetailPage() {
@@ -150,36 +145,9 @@ export default function EpisodeDetailPage() {
     parts.length > 0 ? (
       <div className="mt-6 space-y-6">
         <h2 className="text-sm font-bold text-primary">{tr("パート", "Part")}</h2>
-        {parts.map((p) => {
-          const pd = p.partDetails;
-          return (
-            <div key={p.databaseId} className="rounded-2xl border border-border overflow-hidden">
-              <div className="px-3 py-2 bg-surface-2/50 flex items-center justify-between">
-                <span className="text-sm font-bold">
-                  Part {pd.partNumber ?? "-"}
-                </span>
-                {pd.durationSeconds ? (
-                  <span className="text-[11px] text-text-dim">{formatDuration(pd.durationSeconds)}</span>
-                ) : null}
-              </div>
-              <div className="p-3">
-                <LinkuraPlayer
-                  videoId={pd.youtubeVideoId || undefined}
-                  mirrorUrl={pd.mirrorUrl || undefined}
-                  title={p.title}
-                  accentColor="#8b82f5"
-                  hasSubtitleJp={!!pd.hasSubtitleJp}
-                  hasSubtitleId={!!pd.hasSubtitleId}
-                />
-                {(lang === "jp" ? pd.summaryJp : pd.summaryId || pd.summaryJp) && (
-                  <p className="text-sm leading-relaxed text-foreground/80 mt-3">
-                    {lang === "jp" ? pd.summaryJp : pd.summaryId || pd.summaryJp}
-                  </p>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {parts.map((p) => (
+          <PartPlayer key={p.databaseId} part={p} accentColor="#8b82f5" />
+        ))}
       </div>
     ) : (
       /* Fallback: episode tanpa part — tampilkan video utama episode (legacy) */
