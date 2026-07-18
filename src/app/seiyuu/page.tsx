@@ -98,6 +98,7 @@ export default function SeiyuuListPage() {
           )}
         </main>
         <BottomNav
+          onBack={() => router.back()}
           onMenu={() => setMenuOpen(!menuOpen)}
           onHome={() => router.push("/")}
           menuOpen={menuOpen}

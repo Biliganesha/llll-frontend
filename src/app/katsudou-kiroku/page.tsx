@@ -106,7 +106,7 @@ function ChapterCard({ chapter }: { chapter: ChapterNode }) {
   const hero = d.heroImage?.node.sourceUrl;
   const label = lang === "jp" ? d.chapterLabelJp : d.chapterLabelId || d.chapterLabelJp;
   const desc = lang === "jp" ? d.descriptionJp : d.descriptionId || d.descriptionJp;
-  const isInterlude = d.chapterType === "interlude";
+  const isInterlude = (Array.isArray(d.chapterType) ? d.chapterType[0] : d.chapterType) === "interlude";
 
   return (
     <Link

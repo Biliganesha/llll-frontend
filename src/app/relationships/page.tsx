@@ -27,6 +27,11 @@ const GET_RELATIONSHIP_DATA = gql`
               sourceUrl
             }
           }
+          imageChibi {
+            node {
+              sourceUrl
+            }
+          }
           unit {
             nodes {
               ... on Unit {
@@ -57,6 +62,7 @@ type CharNode = {
     colorTheme: string | null;
     generation: string[] | null;
     imageMain: { node: { sourceUrl: string } } | null;
+    imageChibi: { node: { sourceUrl: string } } | null;
     unit: {
       nodes: {
         databaseId: number;
@@ -372,7 +378,7 @@ export default function RelationshipsPage() {
         const charColor = c.characterDetails.colorTheme || unitColor;
         const isActive = activeChar === p.charId;
         const isDimmed = activeChar !== null && !isActive;
-        const imgUrl = c.characterDetails.imageMain?.node.sourceUrl;
+        const imgUrl = c.characterDetails.imageChibi?.node.sourceUrl || c.characterDetails.imageMain?.node.sourceUrl;
 
         return (
           <g

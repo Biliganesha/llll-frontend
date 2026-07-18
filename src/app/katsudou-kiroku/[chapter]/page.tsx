@@ -153,7 +153,7 @@ export default function ChapterDetailPage() {
                 className="px-2 py-0.5 rounded-full text-[11px] font-bold text-white"
                 style={{ background: color }}
               >
-                {chapter.chapterDetails.chapterType === "interlude" ? "間章" : "章"}
+                {(Array.isArray(chapter.chapterDetails.chapterType) ? chapter.chapterDetails.chapterType[0] : chapter.chapterDetails.chapterType) === "interlude" ? "間章" : "章"}
               </span>
               <h1 className="text-2xl font-extrabold leading-tight">{chapter.title}</h1>
             </div>

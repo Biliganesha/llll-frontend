@@ -153,7 +153,7 @@ export default function StickerPage() {
           </div>
 
           {/* Toggle リスト/アイコン */}
-          <div className="sticky bottom-2 mt-3 flex justify-end pr-12">
+          <div className="sticky bottom-2 lg:bottom-20 mt-3 flex justify-end pr-12">
             <div className="flex rounded-full bg-white shadow-lg border border-[var(--linkura-border)] overflow-hidden">
               {(
                 [
