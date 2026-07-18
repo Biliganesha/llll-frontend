@@ -11,7 +11,7 @@ export function NavBarWrapper() {
   const pathname = usePathname();
 
   // Don't show on homepage (has its own nav) or test pages
-  if (pathname === "/" || pathname === "/test-graphql") return null;
+  if (pathname === "/") return null;
 
   return (
     <div className="hidden sm:block">

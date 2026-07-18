@@ -14,6 +14,8 @@ type LinkuraPlayerProps = {
   hasSubtitleId?: boolean;
   /** Mulai putar otomatis saat mount (dipakai PartPlayer setelah pop-up 再生確認 OK). */
   autoPlay?: boolean;
+  /** Dipanggil saat video selesai (end-screen REPLAY/NEXT + autoplay-next di PartPlayer). */
+  onEnded?: () => void;
 };
 
 /**
@@ -33,6 +35,8 @@ export function LinkuraPlayer(props: LinkuraPlayerProps) {
         title={props.title}
         accentColor={props.accentColor}
         thumbnailUrl={props.thumbnailUrl}
+        onEnded={props.onEnded}
+        autoPlay={props.autoPlay}
       />
     );
   }
@@ -143,9 +147,13 @@ function YouTubeLinkuraPlayer({
   hasSubtitleJp,
   hasSubtitleId,
   autoPlay,
+  onEnded,
 }: LinkuraPlayerProps & { videoId: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
+  // ref supaya callback terbaru terpanggil tanpa membuat ulang player YT
+  const onEndedRef = useRef(onEnded);
+  onEndedRef.current = onEnded;
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const playerId = useRef(`lp-${videoId}-${Math.random().toString(36).slice(2, 6)}`);
 
@@ -211,6 +219,7 @@ function YouTubeLinkuraPlayer({
             } else if (state === window.YT.PlayerState.ENDED) {
               setPlaying(false);
               stopProgressTracking();
+              onEndedRef.current?.();
             }
           },
         },
@@ -518,9 +527,13 @@ function NativeLinkuraPlayer({
   title,
   accentColor = "#8b82f5",
   thumbnailUrl,
+  onEnded,
+  autoPlay,
 }: {
   mirrorUrl: string;
   title?: string;
+  onEnded?: () => void;
+  autoPlay?: boolean;
   accentColor?: string;
   thumbnailUrl?: string;
 }) {
@@ -537,6 +550,16 @@ function NativeLinkuraPlayer({
     setStarted(true);
     setTimeout(() => videoRef.current?.play().catch(() => {}), 50);
   };
+
+  // Autostart (autoplay-next antar part / setelah 再生確認 OK).
+  const didAutoStart = useRef(false);
+  useEffect(() => {
+    if (autoPlay && !didAutoStart.current) {
+      didAutoStart.current = true;
+      handleStart();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoPlay]);
 
   const togglePlay = () => {
     const v = videoRef.current;
@@ -626,7 +649,7 @@ function NativeLinkuraPlayer({
         onClick={togglePlay}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
-        onEnded={() => setPlaying(false)}
+        onEnded={() => { setPlaying(false); onEnded?.(); }}
         onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
         onLoadedMetadata={() => setDuration(videoRef.current?.duration ?? 0)}
       />

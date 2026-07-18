@@ -14,7 +14,7 @@ import { unitDisplayColors } from "@/lib/unit-colors";
 
 const GET_SUKUKONE = gql`
   query GetSukukoneVideos {
-    sukukoneVideos(first: 100) {
+    sukukoneVideos(first: 500) {
       nodes {
         databaseId
         title

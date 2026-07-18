@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
+import { HomeClock } from "@/components/ui/HomeClock";
 import { useTr, useLanguage } from "@/lib/language";
 
 /**
@@ -20,17 +21,9 @@ export function TabletHome() {
     <div className="relative flex-1 min-h-screen wallpaper-default overflow-hidden">
       <TabletStatusBar />
 
+      {/* Jam besar di wallpaper ala app (brand tampil di status bar + FirstVisitModal) */}
       <main className="relative h-full min-h-screen flex items-center justify-center px-6">
-        <div className="text-center pointer-events-none select-none">
-          <h1 className="text-5xl font-extrabold brand-gradient-text leading-[1.1] drop-shadow-sm">
-            Link! Like!
-            <br />
-            Library! Legacy!
-          </h1>
-          <p className="text-sm text-[var(--linkura-text-dim)] mt-3 tracking-[0.18em] font-medium">
-            {tr("蓮ノ空アーカイブ", "Arsip Hasunosora")}
-          </p>
-        </div>
+        <HomeClock className="text-center pointer-events-none select-none" size="text-[96px]" />
       </main>
 
       <TabletWidget />

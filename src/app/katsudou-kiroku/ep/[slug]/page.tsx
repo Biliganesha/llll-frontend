@@ -24,7 +24,7 @@ const GET_EPISODE_DETAIL = gql`
     episode(id: $slug, idType: SLUG) {
       ...EpisodeFields
     }
-    episodeParts(first: 100) {
+    episodeParts(first: 500) {
       nodes {
         ...PartFields
       }
@@ -67,6 +67,8 @@ export default function EpisodeDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  // part yang diminta mulai otomatis (autoplay-next dari part sebelumnya)
+  const [autoStartId, setAutoStartId] = useState<number | null>(null);
   const { lang } = useLanguage();
   const tr = (jp: string, id: string) => (lang === "jp" ? jp : id);
   const slug = params.slug as string;
@@ -145,8 +147,19 @@ export default function EpisodeDetailPage() {
     parts.length > 0 ? (
       <div className="mt-6 space-y-6">
         <h2 className="text-sm font-bold text-primary">{tr("パート", "Part")}</h2>
-        {parts.map((p) => (
-          <PartPlayer key={p.databaseId} part={p} accentColor="#8b82f5" />
+        {parts.map((p, i) => (
+          <PartPlayer
+            key={p.databaseId}
+            part={p}
+            accentColor="#8b82f5"
+            hasNext={i < parts.length - 1}
+            onNext={
+              i < parts.length - 1
+                ? () => setAutoStartId(parts[i + 1].databaseId)
+                : undefined
+            }
+            autoStart={autoStartId === p.databaseId}
+          />
         ))}
       </div>
     ) : (

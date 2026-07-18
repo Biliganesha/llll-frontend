@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
+import { HomeClock } from "@/components/ui/HomeClock";
 import { useTr, useLanguage } from "@/lib/language";
 
 /**
@@ -21,23 +22,9 @@ export function DesktopHome() {
     <div className="relative flex-1 min-h-screen wallpaper-default overflow-hidden">
       <DesktopStatusBar />
 
+      {/* Jam besar di wallpaper ala app (brand tampil di status bar + FirstVisitModal) */}
       <main className="relative h-full min-h-screen flex items-center justify-center">
-        <div className="text-center pointer-events-none select-none">
-          <h1 className="text-7xl font-extrabold brand-gradient-text leading-[1.1] drop-shadow-sm">
-            Link! Like!
-            <br />
-            Library! Legacy!
-          </h1>
-          <p className="text-base text-[var(--linkura-text-dim)] mt-4 tracking-[0.2em] font-medium">
-            {tr("蓮ノ空アーカイブ", "Arsip Hasunosora")}
-          </p>
-          <p className="text-xs text-[var(--linkura-text-dim)]/70 mt-2">
-            {tr(
-              "Link! Like! Love Live! 蓮ノ空の活動を永続保存",
-              "Link! Like! Love Live! — Mengabadikan aktivitas Hasunosora"
-            )}
-          </p>
-        </div>
+        <HomeClock className="text-center pointer-events-none select-none" size="text-[120px]" />
       </main>
 
       <DesktopWidget />
