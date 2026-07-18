@@ -29,6 +29,11 @@ export function FirstVisitModal() {
     // Tampil tiap kali komponen mount (= tiap full page load / kunjungan baru).
     setShow(true);
     setGreet(timeGreeting(new Date().getHours())); // jam lokal browser user
+
+    // Bisa dibuka ulang dari tombol 初心者マーク di home (fidelity ikon panduan app).
+    const reopen = () => setShow(true);
+    window.addEventListener("llll:show-guide", reopen);
+    return () => window.removeEventListener("llll:show-guide", reopen);
   }, []);
 
   const accept = () => {

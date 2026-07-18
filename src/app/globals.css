@@ -22,6 +22,21 @@
   --color-mirakura: #f59e0b;     /* Mirakura Park */
   --color-edelnote: #8b5cf6;     /* Edel Note */
   --color-hasunosora: #c084fc;   /* Hasu no Sora brand */
+
+  /* Tema per-fitur ala app リンクラ — nilai TERUKUR dari screenshot app 1440x2560
+     (docs/ui-reference/design-tokens.json, diekstrak 2026-07-18; band header
+     活動記録 & スクコネ terbukti IDENTIK cyan→periwinkle di 2 layar) */
+  --feature-katsudou-1: #6ad1f9;   /* band header kiri (terukur k02) */
+  --feature-katsudou-2: #85a1fb;   /* band header kanan */
+  --feature-sukukone-1: #6ad1f9;   /* band header kiri (terukur n04, identik) */
+  --feature-sukukone-2: #85a1fb;   /* band header kanan */
+  --feature-text: #7b8bf5;         /* aksen teks/kontrol (periwinkle terbaca di putih) */
+  --menu-card-green-1: #7fd6a0;    /* kartu menu スクコネ */
+  --menu-card-green-2: #4fb87e;
+  --menu-card-orange-1: #f2b45c;   /* kartu menu 活動記録 */
+  --menu-card-orange-2: #e08a3c;
+  --icon-line: #7d87f0;            /* line-art ikon menu/nav */
+  --notif-dot: #ff6243;            /* dot merah notif (terukur s02) */
 }
 
 @theme inline {
@@ -52,13 +67,30 @@ body {
   min-height: 100%;
 }
 
-/* Wallpaper default — sakura + sky feel (pengganti image wallpaper asli yang belum ada) */
+/* Wallpaper home — artwork resmi dari arsip aset app (fallback gradient di bawahnya
+   tetap tampil selagi image dimuat / bila 404) */
 .wallpaper-default {
   background:
+    url("/linkura/wallpaper-home.webp") center top / cover no-repeat,
     radial-gradient(ellipse at 20% 15%, rgba(255, 200, 230, 0.55) 0%, transparent 45%),
     radial-gradient(ellipse at 85% 25%, rgba(179, 212, 255, 0.55) 0%, transparent 45%),
-    radial-gradient(ellipse at 50% 90%, rgba(200, 180, 255, 0.5) 0%, transparent 55%),
     linear-gradient(180deg, #fff5f9 0%, #f0eaff 50%, #e6efff 100%);
+}
+
+/* Band header fitur ala app (活動記録 / スクコネ) — gradien + pola berlian samar */
+.feature-band-katsudou {
+  background: linear-gradient(90deg, var(--feature-katsudou-1), var(--feature-katsudou-2));
+}
+.feature-band-sukukone {
+  background: linear-gradient(90deg, var(--feature-sukukone-1), var(--feature-sukukone-2));
+}
+
+/* Jam besar di wallpaper home (angka putih translusen ala app) */
+.home-clock {
+  color: rgba(255, 255, 255, 0.97);
+  text-shadow: 0 1px 10px rgba(120, 110, 180, 0.35);
+  font-variant-numeric: tabular-nums;
+  line-height: 0.9;
 }
 
 /* Scrollbar halus seperti mobile */

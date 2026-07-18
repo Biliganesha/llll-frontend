@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { StatusBar } from "@/components/ui/StatusBar";
@@ -94,6 +94,53 @@ type SukukoneNode = {
 type QueryData = { sukukoneVideos: { nodes: SukukoneNode[] } };
 
 type TabId = "upcoming" | "memorize" | "archives" | "wxstation" | "mv" | "channel" | "ranking";
+
+/** Ikon line-art kecil per tab (ala app: ikon di atas label). */
+const TAB_ICONS: Record<TabId, ReactNode> = {
+  upcoming: (
+    <>
+      <circle cx="12" cy="14" r="3" />
+      <path d="M5.5 8.5a8 8 0 0 1 13 0M8 11a4.5 4.5 0 0 1 8 0" />
+    </>
+  ),
+  memorize: (
+    <>
+      <rect x="3" y="6" width="18" height="14" rx="2" />
+      <path d="m3 16 5-4 4 3 4-4 5 4M9 3h6" />
+    </>
+  ),
+  archives: (
+    <>
+      <path d="M12 4v9m0 0 3.5-3.5M12 13 8.5 9.5" />
+      <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+    </>
+  ),
+  wxstation: (
+    <>
+      <rect x="3" y="7" width="13" height="12" rx="2" />
+      <path d="m16 11 5-3v10l-5-3" />
+    </>
+  ),
+  mv: (
+    <>
+      <circle cx="7" cy="18" r="2.5" />
+      <circle cx="17" cy="16" r="2.5" />
+      <path d="M9.5 18V7l10-2v11" />
+    </>
+  ),
+  channel: (
+    <>
+      <rect x="3" y="8" width="18" height="12" rx="2" />
+      <path d="m8 3 4 4 4-4" />
+    </>
+  ),
+  ranking: (
+    <>
+      <path d="m3 8 4 3 5-6 5 6 4-3-1.5 10h-15z" />
+      <path d="M7 21h10" />
+    </>
+  ),
+};
 
 const TABS: { id: TabId; label: string; emptyMsg?: { jp: string; id: string } }[] = [
   {
@@ -228,6 +275,7 @@ export default function SukukonePage() {
   const [filterUnit, setFilterUnit] = useState<string | null>(null);
   const [filterPerformer, setFilterPerformer] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sortDesc, setSortDesc] = useState(true); // 日付順 ala app (default terbaru dulu)
   const router = useRouter();
   const { lang } = useLanguage();
   const tr = (jp: string, id: string) => (lang === "jp" ? jp : id);
@@ -246,12 +294,16 @@ export default function SukukonePage() {
         <button
           key={tab.id}
           onClick={() => handleTabClick(tab.id)}
-          className={`shrink-0 px-4 py-2.5 text-xs font-bold tracking-wide transition-all duration-150 border-b-2 cursor-pointer ${
+          className={`shrink-0 flex flex-col items-center gap-0.5 px-3.5 py-2 text-[10px] font-bold tracking-wide transition-all duration-150 border-b-2 cursor-pointer ${
             activeTab === tab.id
-              ? "text-primary border-primary"
+              ? "border-[var(--feature-sukukone-1)]"
               : "text-text-dim border-transparent hover:text-foreground hover:border-border"
           }`}
+          style={activeTab === tab.id ? { color: "var(--feature-text)" } : undefined}
         >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            {TAB_ICONS[tab.id]}
+          </svg>
           {tab.label}
         </button>
       ))}
@@ -413,11 +465,28 @@ export default function SukukonePage() {
       );
     }
 
-    // Tab konten — filter + grid (poin 10)
+    // Tab konten — sort 日付順 (ala app) + filter + grid (poin 10)
     const tabVids = filterByTab(videos, activeTab);
-    const filtered = applyFilters(tabVids, filterUnit, filterPerformer);
+    const filtered = [...applyFilters(tabVids, filterUnit, filterPerformer)].sort((a, b) => {
+      const ta = a.sukukoneVideoDetails.airDate ? new Date(a.sukukoneVideoDetails.airDate).getTime() : 0;
+      const tb = b.sukukoneVideoDetails.airDate ? new Date(b.sukukoneVideoDetails.airDate).getTime() : 0;
+      return sortDesc ? tb - ta : ta - tb;
+    });
     return (
       <>
+        {/* Baris alat ala app: ♫ label + sort 日付順 */}
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: "var(--feature-text)" }}>
+            <span aria-hidden>♫</span> {cfg.label}
+          </span>
+          <button
+            onClick={() => setSortDesc(!sortDesc)}
+            className="inline-flex items-center gap-1 rounded-full bg-white border border-[var(--linkura-border)] px-2.5 py-1 text-[10px] font-bold text-slate-600 shadow-sm active:scale-95 transition cursor-pointer"
+            aria-label={tr("並び替え", "Urutkan")}
+          >
+            {tr("日付順", "Urut tanggal")} <span aria-hidden>{sortDesc ? "↓" : "↑"}</span>
+          </button>
+        </div>
         {filterBar(tabVids)}
         {filtered.length === 0 ? (
           <NoContent
@@ -436,16 +505,16 @@ export default function SukukonePage() {
       <div className="sm:hidden flex-1 flex flex-col min-h-screen bg-background relative">
         <StatusBar episodeCount={videos.length} unitLabel="スクコネ" />
 
-        <header className="px-3 pt-3">
-          <h1 className="text-lg font-bold brand-gradient-text">
+        <header className="feature-band-sukukone px-3 py-2.5 shadow-sm">
+          <h1 className="text-base font-bold text-white drop-shadow tracking-wide">
             {tr("スクールアイドルコネクト", "School Idol Connect")}
           </h1>
         </header>
 
-        {tabBar}
+        <div className="bg-white/90 border-b border-[var(--linkura-border)]">{tabBar}</div>
 
         <main className="flex-1 px-3 pt-3 pb-20 overflow-y-auto">
-          {renderBody("list", 2)}
+          {renderBody("card", 2)}
         </main>
 
         <BottomNav
@@ -459,13 +528,13 @@ export default function SukukonePage() {
 
       {/* ===== TABLET ===== */}
       <div className="hidden sm:flex lg:hidden flex-1 flex-col min-h-screen bg-background">
-        <header className="px-6 pt-6 pb-2">
-          <h1 className="text-2xl font-bold brand-gradient-text">
+        <header className="feature-band-sukukone px-6 py-3 shadow-sm">
+          <h1 className="text-xl font-bold text-white drop-shadow tracking-wide">
             {tr("スクールアイドルコネクト", "School Idol Connect")}
           </h1>
         </header>
 
-        {tabBar}
+        <div className="bg-white/90 border-b border-[var(--linkura-border)]">{tabBar}</div>
 
         <main className="flex-1 px-6 pt-4 pb-6 overflow-y-auto">
           {renderBody("card", 2)}
@@ -474,13 +543,17 @@ export default function SukukonePage() {
 
       {/* ===== DESKTOP ===== */}
       <div className="hidden lg:flex flex-1 flex-col min-h-screen bg-background">
-        <header className="max-w-5xl mx-auto w-full px-8 pt-8 pb-2">
-          <h1 className="text-3xl font-bold brand-gradient-text">
-            {tr("スクールアイドルコネクト", "School Idol Connect")}
-          </h1>
+        <header className="feature-band-sukukone">
+          <div className="max-w-5xl mx-auto w-full px-8 py-3.5">
+            <h1 className="text-2xl font-bold text-white drop-shadow tracking-wide">
+              {tr("スクールアイドルコネクト", "School Idol Connect")}
+            </h1>
+          </div>
         </header>
 
-        <div className="max-w-5xl mx-auto w-full px-8">{tabBar}</div>
+        <div className="bg-white/90 border-b border-[var(--linkura-border)]">
+          <div className="max-w-5xl mx-auto w-full px-8">{tabBar}</div>
+        </div>
 
         <main className="max-w-5xl mx-auto w-full px-8 pt-4 pb-8 flex-1">
           {renderBody("card", 3)}
@@ -635,19 +708,23 @@ function VideoCard({
           </span>
 
           {d.durationSeconds && (
-            <span className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-[10px] text-white">
+            <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-[10px] text-white tabular-nums">
               {formatDuration(d.durationSeconds)}
+            </span>
+          )}
+
+          {/* Tanggal overlay di thumbnail (ala app n04_archives) */}
+          {d.airDate && (
+            <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/55 text-[10px] font-medium text-white tabular-nums">
+              {formatDate(d.airDate)}
             </span>
           )}
         </div>
 
-        <div className="p-3">
-          <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+        <div className="p-2.5">
+          <h3 className="font-semibold text-[12px] leading-tight line-clamp-2 group-hover:text-primary transition-colors">
             {video.title}
           </h3>
-          <p className="text-[11px] text-text-dim mt-1">
-            {formatDate(d.airDate)}
-          </p>
         </div>
       </Link>
     );

@@ -120,8 +120,18 @@ export default function ChapterDetailPage() {
       ? chapter?.chapterDetails.descriptionJp
       : chapter?.chapterDetails.descriptionId || chapter?.chapterDetails.descriptionJp;
 
+  // Aksen kontrol L2 = biru-lavender 活動記録 ala app (warna chapter tetap utk badge 章)
+  const featureAccent = "var(--feature-text)";
+
   const body = (
     <>
+      {/* Band header fitur ala app (k02_ch1.png) */}
+      <div className="feature-band-katsudou -mx-3 -mt-3 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 py-2.5 mb-3 shadow-sm">
+        <h1 className="text-base font-bold text-white drop-shadow tracking-wide">
+          {tr("活動記録", "Catatan Aktivitas")}
+        </h1>
+      </div>
+
       <Link href="/katsudou-kiroku" className="text-xs text-text-dim hover:underline">
         {tr("← 活動記録", "← Catatan Aktivitas")}
       </Link>
@@ -170,13 +180,13 @@ export default function ChapterDetailPage() {
                       <span
                         className="w-4 h-4 rounded-full border-2 transition"
                         style={{
-                          borderColor: present ? color : "var(--linkura-border)",
-                          background: active ? color : "transparent",
+                          borderColor: present ? featureAccent : "var(--linkura-border)",
+                          background: active ? featureAccent : "transparent",
                         }}
                       />
                       <span
                         className={`text-xs font-bold ${active ? "" : "text-text-dim"}`}
-                        style={active ? { color } : undefined}
+                        style={active ? { color: featureAccent } : undefined}
                       >
                         {g}期
                       </span>
@@ -204,7 +214,7 @@ export default function ChapterDetailPage() {
                       className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium border transition cursor-pointer ${
                         active ? "text-white border-transparent" : "text-text-dim border-border hover:text-foreground"
                       }`}
-                      style={active ? { background: color } : undefined}
+                      style={active ? { background: featureAccent } : undefined}
                     >
                       {m}
                     </button>
@@ -223,7 +233,7 @@ export default function ChapterDetailPage() {
             ) : (
               <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-3 -mx-1 px-1">
                 {filtered.map((ep) => (
-                  <EpisodeBigCard key={ep.databaseId} episode={ep} accent={color} />
+                  <EpisodeBigCard key={ep.databaseId} episode={ep} accent={featureAccent} />
                 ))}
               </div>
             )}
@@ -244,7 +254,7 @@ export default function ChapterDetailPage() {
                 <button
                   onClick={() => router.push(`/katsudou-kiroku/ep/${nowEpisode.slug}`)}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border transition hover:bg-surface-2"
-                  style={{ borderColor: color, color }}
+                  style={{ borderColor: featureAccent, color: featureAccent }}
                 >
                   {tr("最新へ", "Terbaru")} <span aria-hidden>→ NOW</span>
                 </button>
@@ -316,7 +326,7 @@ function EpisodeBigCard({ episode, accent }: { episode: EpisodeNode; accent: str
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}55)` }} />
+          <div className="w-full h-full" style={{ background: "linear-gradient(135deg, var(--feature-katsudou-1), var(--feature-katsudou-2))" }} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
