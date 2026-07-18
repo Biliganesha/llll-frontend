@@ -20,6 +20,13 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M8 3v4M16 3v4M3 10h18" />
     </>
   ),
+  "/collection": (
+    <>
+      <rect x="3" y="7" width="13" height="13" rx="2" />
+      <path d="M7 7V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2" />
+      <path d="m3 16 3.5-3 3 2.5 2.5-2 4 3.5" />
+    </>
+  ),
   "/timeline": (
     <>
       <circle cx="12" cy="13" r="8" />

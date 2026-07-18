@@ -15,6 +15,7 @@ function sectionOf(pathname: string): { jp: string; id: string } {
     ["/characters", "/units", "/seiyuu", "/relationships"].some((p) => pathname.startsWith(p))
   )
     return { jp: "メンバー", id: "Anggota" };
+  if (pathname.startsWith("/collection")) return { jp: "コレクション", id: "Koleksi" };
   if (pathname.startsWith("/timeline")) return { jp: "タイムライン", id: "Garis Waktu" };
   if (pathname.startsWith("/gameplay")) return { jp: "ゲームプレイ", id: "Gameplay" };
   if (pathname.startsWith("/search")) return { jp: "検索", id: "Cari" };

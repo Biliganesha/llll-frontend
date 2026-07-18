@@ -56,6 +56,14 @@ export const MENU_LINKS: MenuLink[] = [
     gradient: "linear-gradient(135deg, #9ee6ff 0%, #a5aeff 100%)",
   },
   {
+    href: "/collection",
+    label: "コレクション",
+    labelId: "Koleksi",
+    sub: "Collection",
+    emoji: "🖼️",
+    gradient: "linear-gradient(135deg, #ffd6a5 0%, #fca5d8 100%)",
+  },
+  {
     href: "/timeline",
     label: "タイムライン",
     labelId: "Garis Waktu",
