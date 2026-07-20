@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
+import { DockMembersButton } from "@/components/ui/DockMembersButton";
 import { HomeClock } from "@/components/ui/HomeClock";
 import { useTr, useLanguage } from "@/lib/language";
 
@@ -111,7 +112,7 @@ function TabletDock({ onMenuClick }: { onMenuClick: () => void }) {
         <div className="w-px h-9 bg-[var(--linkura-border)]" />
         <DockBtn href="/sukukone" label="スクコネ" emoji="🎤" gradient="linear-gradient(135deg, #6a7bff 0%, #a88dff 100%)" />
         <DockBtn href="/katsudou-kiroku" label="活動記録" emoji="📖" gradient="linear-gradient(135deg, #ffb3d9 0%, #b3d4ff 100%)" />
-        <DockBtn href="/characters" label="メンバー" emoji="🎀" gradient="linear-gradient(135deg, #ffd59e 0%, #ffb3c1 100%)" />
+        <DockMembersButton size="md" />
       </div>
     </motion.div>
   );

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage, useTr } from "@/lib/language";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
+import { DockMembersButton } from "@/components/ui/DockMembersButton";
 
 /** Nama section untuk island pill kontekstual (padanan NAME pill status bar app). */
 function sectionOf(pathname: string): { jp: string; id: string } {
@@ -125,7 +126,7 @@ export function NavBar() {
           <DockLink href="/sukukone" active={pathname.startsWith("/sukukone")} label="スクコネ" emoji="🎤" gradient="linear-gradient(135deg, #6a7bff 0%, #a88dff 100%)" />
           <DockLink href="/katsudou-kiroku" active={pathname.startsWith("/katsudou-kiroku")} label="活動記録" emoji="📖" gradient="linear-gradient(135deg, #ffb3d9 0%, #b3d4ff 100%)" />
           <DockLink href="/calendar" active={pathname.startsWith("/calendar")} label="カレンダー" emoji="📅" gradient="linear-gradient(135deg, #9ee6ff 0%, #a5aeff 100%)" />
-          <DockLink href="/characters" active={pathname.startsWith("/characters")} label="メンバー" emoji="🎀" gradient="linear-gradient(135deg, #ffd59e 0%, #ffb3c1 100%)" />
+          <DockMembersButton size="sm" />
           <DockLink href="/search" active={pathname.startsWith("/search")} label="検索" emoji="🔍" gradient="linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%)" />
         </div>
       </div>

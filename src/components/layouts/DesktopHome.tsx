@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NostalgiaWidget } from "@/components/calendar/NostalgiaWidget";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
+import { DockMembersButton } from "@/components/ui/DockMembersButton";
 import { HomeClock } from "@/components/ui/HomeClock";
 import { useTr, useLanguage } from "@/lib/language";
 
@@ -160,12 +161,7 @@ function DesktopDock({ onMenuClick }: { onMenuClick: () => void }) {
           emoji="📅"
           gradient="linear-gradient(135deg, #9ee6ff 0%, #a5aeff 100%)"
         />
-        <DockLink
-          href="/characters"
-          label="メンバー"
-          emoji="🎀"
-          gradient="linear-gradient(135deg, #ffd59e 0%, #ffb3c1 100%)"
-        />
+        <DockMembersButton size="lg" />
       </div>
     </motion.div>
   );
