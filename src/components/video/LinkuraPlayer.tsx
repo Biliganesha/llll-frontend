@@ -544,12 +544,60 @@ function NativeLinkuraPlayer({
   const [duration, setDuration] = useState(0);
   const [muted, setMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [streamError, setStreamError] = useState<string | null>(null);
   const hideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** Sumber HLS (arsip スクコネ) — butuh hls.js di browser non-Safari. */
+  const isHls = /\.m3u8(\?|$)/i.test(mirrorUrl);
+  const hlsRef = useRef<{ destroy: () => void } | null>(null);
 
   const handleStart = () => {
     setStarted(true);
     setTimeout(() => videoRef.current?.play().catch(() => {}), 50);
   };
+
+  // Pasang HLS hanya SETELAH ditekan play (preload="none" + attach tertunda)
+  // supaya membuka halaman tidak menarik satu byte pun video.
+  useEffect(() => {
+    if (!started || !isHls) return;
+    const v = videoRef.current;
+    if (!v) return;
+
+    // URUTAN PENTING: hls.js DULU, native belakangan.
+    // Chromium mengembalikan "maybe" untuk application/vnd.apple.mpegurl padahal
+    // tak bisa memutarnya (→ MEDIA_ERR_SRC_NOT_SUPPORTED). Hanya Safari/iOS yang
+    // benar-benar native, dan di sana Hls.isSupported() === false (tanpa MSE).
+    let cancelled = false;
+    import("hls.js")
+      .then(({ default: Hls }) => {
+        if (cancelled || !videoRef.current) return;
+        if (!Hls.isSupported()) {
+          // Safari/iOS: putar langsung.
+          if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
+            videoRef.current.src = mirrorUrl;
+            videoRef.current.play().catch(() => {});
+          } else {
+            setStreamError("HLS tidak didukung browser ini");
+          }
+          return;
+        }
+        const hls = new Hls({ maxBufferLength: 30 });
+        hlsRef.current = hls;
+        hls.loadSource(mirrorUrl);
+        hls.attachMedia(videoRef.current);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => videoRef.current?.play().catch(() => {}));
+        hls.on(Hls.Events.ERROR, (_e, data) => {
+          if (data.fatal) setStreamError("Sumber video tidak dapat dimuat");
+        });
+      })
+      .catch(() => setStreamError("Gagal memuat pemutar HLS"));
+
+    return () => {
+      cancelled = true;
+      hlsRef.current?.destroy();
+      hlsRef.current = null;
+    };
+  }, [started, isHls, mirrorUrl]);
 
   // Autostart (autoplay-next antar part / setelah 再生確認 OK).
   const didAutoStart = useRef(false);
@@ -643,7 +691,8 @@ function NativeLinkuraPlayer({
     >
       <video
         ref={videoRef}
-        src={mirrorUrl}
+        src={isHls ? undefined : mirrorUrl}
+        preload="none"
         playsInline
         className="absolute inset-0 w-full h-full"
         onClick={togglePlay}
@@ -653,6 +702,12 @@ function NativeLinkuraPlayer({
         onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
         onLoadedMetadata={() => setDuration(videoRef.current?.duration ?? 0)}
       />
+
+      {streamError && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/70 px-4 text-center">
+          <p className="text-xs text-white/90">{streamError}</p>
+        </div>
+      )}
 
       <div
         className={`absolute inset-x-0 bottom-0 z-20 transition-opacity duration-300 ${
