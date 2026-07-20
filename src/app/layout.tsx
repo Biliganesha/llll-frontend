@@ -4,6 +4,7 @@ import { ApolloWrapper } from "@/lib/ApolloWrapper";
 import { LanguageProvider } from "@/lib/language";
 import { NavBarWrapper } from "@/components/ui/NavBarWrapper";
 import { FirstVisitModal } from "@/components/ui/FirstVisitModal";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -64,6 +65,7 @@ export default function RootLayout({
             {children}
           </ApolloWrapper>
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );

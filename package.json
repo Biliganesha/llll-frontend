@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@apollo/client": "^4.1.7",
+    "@vercel/analytics": "^2.0.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",
     "graphql": "^16.13.2",
