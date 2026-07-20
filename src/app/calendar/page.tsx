@@ -278,6 +278,8 @@ export default function CalendarPage() {
    *  supaya membuka bulan mana pun tidak berakhir kosong. */
   const [allYears, setAllYears] = useState(true);
   const [hidden, setHidden] = useState<Set<string>>(new Set());
+  /** Tanggal yang sedang aktif di grid — panel kanan mengikutinya (null = sebulan penuh). */
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [jumped, setJumped] = useState(false);
 
   const allEvents = useMemo(() => buildEvents(data), [data]);
@@ -330,6 +332,26 @@ export default function CalendarPage() {
       return allYears || e.year === viewYear;
     });
   }
+
+  // Saat bulan/mode berubah: pilih hari ini bila relevan, kalau tidak tanggal
+  // berisi pertama — supaya panel kanan tak pernah memuntahkan sebulan penuh.
+  useEffect(() => {
+    if (allEvents.length === 0) return;
+    const withEvents = new Set(
+      monthEvents.map((e) => parseInt(e.monthDay.split("-")[1], 10))
+    );
+    if (withEvents.size === 0) {
+      setSelectedDay(null);
+      return;
+    }
+    const isThisMonth = viewMonth === today.getMonth();
+    setSelectedDay(
+      isThisMonth && withEvents.has(today.getDate())
+        ? today.getDate()
+        : Math.min(...withEvents)
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMonth, viewYear, allYears, allEvents.length, hidden]);
 
   const prevMonth = () => {
     if (viewMonth === 0) { setViewMonth(11); setViewYear(viewYear - 1); }
@@ -452,14 +474,30 @@ export default function CalendarPage() {
           const dayEvents = eventsForDay(day);
           const isToday = day === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear();
 
+          const isSelected = selectedDay === day;
           return (
-            <div
+            <button
               key={day}
-              className={`relative min-h-[40px] p-1 rounded-lg text-xs ${
-                isToday ? "ring-2 ring-primary bg-primary/5" : ""
-              } ${dayEvents.length > 0 ? "bg-surface" : ""}`}
+              onClick={() => setSelectedDay(isSelected ? null : day)}
+              disabled={dayEvents.length === 0}
+              className={`relative min-h-[40px] p-1 rounded-lg text-xs text-left transition ${
+                isSelected ? "ring-2 ring-[var(--feature-text)] bg-[var(--feature-text)]/10" : ""
+              } ${isToday && !isSelected ? "ring-2 ring-primary bg-primary/5" : ""} ${
+                dayEvents.length > 0
+                  ? "bg-surface cursor-pointer hover:shadow-sm"
+                  : "cursor-default"
+              }`}
             >
-              <span className={`${isToday ? "font-bold text-primary" : "text-text-dim"}`}>
+              <span
+                className={`${
+                  isSelected
+                    ? "font-bold"
+                    : isToday
+                      ? "font-bold text-primary"
+                      : "text-text-dim"
+                }`}
+                style={isSelected ? { color: "var(--feature-text)" } : undefined}
+              >
                 {day}
               </span>
               {/* Event dots */}
@@ -475,23 +513,41 @@ export default function CalendarPage() {
                   ))}
                 </div>
               )}
-            </div>
+            </button>
           );
         })}
       </div>
     </div>
   );
 
+  // Panel daftar mengikuti tanggal aktif di grid (null = sebulan penuh)
+  const listedEvents = selectedDay ? eventsForDay(selectedDay) : monthEvents;
+
   const eventsList = (
     <div className="mt-4">
-      <h3 className="text-sm font-bold text-text-dim mb-2">
-        {MONTH_NAMES[viewMonth]}のイベント ({monthEvents.length})
-      </h3>
-      {monthEvents.length === 0 ? (
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <h3 className="text-sm font-bold text-text-dim">
+          {selectedDay
+            ? `${MONTH_NAMES[viewMonth]}${selectedDay}日${tr("のイベント", " — acara")} (${listedEvents.length})`
+            : `${MONTH_NAMES[viewMonth]}${tr("のイベント", " — acara")} (${listedEvents.length})`}
+        </h3>
+        <button
+          onClick={() => setSelectedDay(null)}
+          disabled={!selectedDay}
+          className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold transition ${
+            selectedDay
+              ? "bg-white border border-[var(--linkura-border)] text-slate-600 shadow-sm cursor-pointer hover:bg-surface-2"
+              : "opacity-0 pointer-events-none"
+          }`}
+        >
+          {tr("月全体", "Sebulan")}
+        </button>
+      </div>
+      {listedEvents.length === 0 ? (
         <p className="text-xs text-text-dim">{tr("この月のイベントはありません", "Tidak ada acara di bulan ini")}</p>
       ) : (
         <div className="space-y-1.5">
-          {monthEvents
+          {listedEvents
             .sort(
               (a, b) =>
                 parseInt(a.monthDay.split("-")[1]) - parseInt(b.monthDay.split("-")[1]) ||
