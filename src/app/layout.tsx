@@ -30,6 +30,15 @@ export const metadata: Metadata = {
   },
   description: siteDescription,
   metadataBase: new URL(siteUrl),
+  // Verifikasi kepemilikan Google Search Console (isi env
+  // NEXT_PUBLIC_GSC_VERIFICATION dgn nilai content= dari metode "HTML tag").
+  ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } }
+    : {}),
+  // Rem darurat: sembunyikan dari mesin pencari bila diminta (lihat robots.ts).
+  ...(process.env.NEXT_PUBLIC_BLOCK_INDEXING === "true"
+    ? { robots: { index: false, follow: false } }
+    : {}),
   openGraph: {
     type: "website",
     siteName,
