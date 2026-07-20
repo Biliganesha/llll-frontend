@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { StatusBar } from "@/components/ui/StatusBar";
@@ -34,6 +34,27 @@ const GET_CALENDAR_DATA = gql`
         }
       }
     }
+    seiyuus(first: 50) {
+      nodes {
+        databaseId
+        title
+        slug
+        seiyuuProfile {
+          birthDate
+        }
+      }
+    }
+    units(first: 20) {
+      nodes {
+        databaseId
+        title
+        slug
+        unitDetails {
+          debutDate
+          colorPrimary
+        }
+      }
+    }
     characters(first: 50) {
       nodes {
         databaseId
@@ -41,8 +62,10 @@ const GET_CALENDAR_DATA = gql`
         slug
         characterDetails {
           nameJp
-          birthday
           colorTheme
+        }
+        characterBiodata {
+          birthdayMd
         }
       }
     }
@@ -53,7 +76,9 @@ type CalendarEvent = {
   date: Date;
   monthDay: string; // "MM-DD" for cross-year matching
   title: string;
-  type: "episode" | "sukukone" | "birthday";
+  /** judul alternatif mode ID (dipakai tonggak sejarah) */
+  titleId?: string;
+  type: "episode" | "sukukone" | "birthday" | "seiyuu" | "unit" | "milestone";
   year: number;
   href: string;
   color?: string;
@@ -76,23 +101,63 @@ type QueryData = {
       sukukoneVideoDetails: { airDate: string | null; tabType: string[] | null };
     }[];
   };
+  seiyuus: {
+    nodes: {
+      databaseId: number;
+      title: string;
+      slug: string;
+      seiyuuProfile: { birthDate: string | null } | null;
+    }[];
+  };
+  units: {
+    nodes: {
+      databaseId: number;
+      title: string;
+      slug: string;
+      unitDetails: { debutDate: string | null; colorPrimary: string | null };
+    }[];
+  };
   characters: {
     nodes: {
       databaseId: number;
       title: string;
       slug: string;
-      characterDetails: { nameJp: string; birthday: string | null; colorTheme: string | null };
+      characterDetails: { nameJp: string; colorTheme: string | null };
+      characterBiodata: { birthdayMd: string | null } | null;
     }[];
   };
 };
 
-/** Parse JP birthday "5月22日" → { month: 5, day: 22 } */
+/**
+ * Parse ulang tahun "MM-DD" (field `birthdayMd`) → { month, day }.
+ * CATATAN: JANGAN pakai characterDetails.birthday — field itu bertipe ACF
+ * date_picker sedangkan datanya teks JP (「6月26日」), sehingga ACF gagal
+ * mem-parse dan mengembalikan tanggal HARI INI (live: epoch 1970-01-01).
+ * Akibatnya ulang tahun tak pernah muncul di kalender. `birthdayMd` bersih.
+ */
 function parseBirthday(bday: string | null): { month: number; day: number } | null {
   if (!bday) return null;
-  const m = bday.match(/(\d+)月(\d+)日/);
+  const m = bday.match(/^(\d{1,2})-(\d{1,2})$/);
   if (!m) return null;
-  return { month: parseInt(m[1]), day: parseInt(m[2]) };
+  return { month: parseInt(m[1], 10), day: parseInt(m[2], 10) };
 }
+
+/** Parse 「8月5日 (2007)」 → { month, day } (format profil seiyuu). */
+function parseJpDate(v: string | null): { month: number; day: number } | null {
+  if (!v) return null;
+  const m = v.match(/(\d{1,2})月\s*(\d{1,2})日/);
+  return m ? { month: parseInt(m[1], 10), day: parseInt(m[2], 10) } : null;
+}
+
+/**
+ * Tonggak sejarah リンクラ — tanggal dari docs/LOVELIVE_REFERENCE.md & CLAUDE.md
+ * (bukan karangan). Tampil sekali di tahunnya, bukan berulang tahunan.
+ */
+const MILESTONES: { date: string; jp: string; id: string }[] = [
+  { date: "2023-04-15", jp: "リンクラ アーリーアクセス開始", id: "Linkura mulai akses awal" },
+  { date: "2023-05-20", jp: "リンクラ 正式リリース", id: "Linkura rilis resmi" },
+  { date: "2026-06-30", jp: "リンクラ サービス終了", id: "Linkura tutup layanan" },
+];
 
 const MONTH_NAMES = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
 
@@ -125,14 +190,20 @@ function buildEvents(data: QueryData | undefined): CalendarEvent[] {
       title: sv.title,
       type: "sukukone",
       year: d.getFullYear(),
-      href: `/sukukone`,
-      color: "#ef5a8f",
+      href: `/sukukone/${sv.slug}`,
+      // warna mengikuti jenis siaran (ala tab スクコネ)
+      color:
+        sv.sukukoneVideoDetails.tabType?.[0] === "fes_live"
+          ? "#f0a63c"
+          : sv.sukukoneVideoDetails.tabType?.[0] === "with_station"
+            ? "#4fb87e"
+            : "#ef5a8f",
     });
   }
 
   // Birthdays (recurring every year)
   for (const ch of data.characters.nodes) {
-    const bd = parseBirthday(ch.characterDetails.birthday);
+    const bd = parseBirthday(ch.characterBiodata?.birthdayMd ?? null);
     if (!bd) continue;
     events.push({
       date: new Date(2000, bd.month - 1, bd.day),
@@ -142,6 +213,52 @@ function buildEvents(data: QueryData | undefined): CalendarEvent[] {
       year: 0, // recurring
       href: `/characters/${ch.slug}`,
       color: ch.characterDetails.colorTheme || "#ffb74d",
+    });
+  }
+
+  // Ulang tahun seiyuu (tahunan)
+  for (const sy of data.seiyuus?.nodes ?? []) {
+    const bd = parseJpDate(sy.seiyuuProfile?.birthDate ?? null);
+    if (!bd) continue;
+    events.push({
+      date: new Date(2000, bd.month - 1, bd.day),
+      monthDay: `${String(bd.month).padStart(2, "0")}-${String(bd.day).padStart(2, "0")}`,
+      title: `🎤 ${sy.title} 誕生日`,
+      type: "seiyuu",
+      year: 0,
+      href: `/seiyuu/${sy.slug}`,
+      color: "#7bb8f0",
+    });
+  }
+
+  // Hari jadi unit (tahunan, dari debutDate)
+  for (const u of data.units?.nodes ?? []) {
+    if (!u.unitDetails?.debutDate) continue;
+    const d = new Date(u.unitDetails.debutDate);
+    if (isNaN(d.getTime())) continue;
+    events.push({
+      date: new Date(2000, d.getMonth(), d.getDate()),
+      monthDay: `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+      title: `💫 ${u.title} 結成記念日 (${d.getFullYear()})`,
+      type: "unit",
+      year: 0,
+      href: `/units/${u.slug}`,
+      color: u.unitDetails.colorPrimary || "#c9a5ff",
+    });
+  }
+
+  // Tonggak sejarah (sekali, di tahunnya)
+  for (const ms of MILESTONES) {
+    const d = new Date(ms.date + "T00:00:00");
+    events.push({
+      date: d,
+      monthDay: ms.date.slice(5),
+      title: `📌 ${ms.jp}`,
+      titleId: `📌 ${ms.id}`,
+      type: "milestone",
+      year: d.getFullYear(),
+      href: "/about",
+      color: "#8b8b8b",
     });
   }
 
@@ -157,8 +274,30 @@ export default function CalendarPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [viewYear, setViewYear] = useState(today.getFullYear());
+  /** Arsip = kisah yang sudah tamat (2023-04 → 2026-06). Default lihat SEMUA tahun
+   *  supaya membuka bulan mana pun tidak berakhir kosong. */
+  const [allYears, setAllYears] = useState(true);
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const [jumped, setJumped] = useState(false);
 
   const allEvents = useMemo(() => buildEvents(data), [data]);
+
+  // Sekali data tiba: kalau bulan hari ini kosong (arsip sudah berakhir),
+  // lompat ke bulan berkonten TERAKHIR — bukan memaksa user menekan ← berkali-kali.
+  useEffect(() => {
+    if (jumped || allEvents.length === 0) return;
+    if (allYears) { setJumped(true); return; } // semua bulan berisi → tak perlu lompat
+    const dated = allEvents.filter((e) => e.type !== "birthday");
+    const inThisMonth = dated.some(
+      (e) => e.date.getMonth() === today.getMonth() && e.date.getFullYear() === today.getFullYear()
+    );
+    if (!inThisMonth) {
+      const latest = dated.reduce((a, b) => (a.date > b.date ? a : b));
+      setViewMonth(latest.date.getMonth());
+      setViewYear(latest.date.getFullYear());
+    }
+    setJumped(true);
+  }, [allEvents, jumped, today, allYears]);
 
   // "Hari ini di 蓮ノ空" — events that match today's month/day across all years
   const todayMD = `${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
@@ -166,10 +305,11 @@ export default function CalendarPage() {
 
   // Events for the current view month
   const monthEvents = allEvents.filter((e) => {
-    if (e.type === "birthday") {
+    if (hidden.has(e.type)) return false;
+    if (e.type === "birthday" || e.type === "seiyuu" || e.type === "unit")
       return e.date.getMonth() === viewMonth;
-    }
-    return e.date.getMonth() === viewMonth && e.date.getFullYear() === viewYear;
+    if (e.date.getMonth() !== viewMonth) return false;
+    return allYears || e.date.getFullYear() === viewYear;
   });
 
   // Build calendar grid
@@ -184,8 +324,10 @@ export default function CalendarPage() {
   function eventsForDay(day: number) {
     const md = `${String(viewMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     return allEvents.filter((e) => {
-      if (e.type === "birthday") return e.monthDay === md;
-      return e.monthDay === md && e.year === viewYear;
+      if (hidden.has(e.type)) return false;
+      if (e.type === "birthday" || e.type === "seiyuu" || e.type === "unit") return e.monthDay === md;
+      if (e.monthDay !== md) return false;
+      return allYears || e.year === viewYear;
     });
   }
 
@@ -227,9 +369,73 @@ export default function CalendarPage() {
       <div className="flex items-center justify-between mb-3">
         <button onClick={prevMonth} className="px-3 py-1 rounded-lg text-sm hover:bg-surface-2 cursor-pointer">←</button>
         <h2 className="text-base font-bold">
-          {viewYear}年 {MONTH_NAMES[viewMonth]}
+          {allYears ? (
+            <>
+              {MONTH_NAMES[viewMonth]}
+              <span className="ml-2 text-[11px] font-semibold text-text-dim">
+                {tr("すべての年", "semua tahun")}
+              </span>
+            </>
+          ) : (
+            `${viewYear}年 ${MONTH_NAMES[viewMonth]}`
+          )}
         </h2>
         <button onClick={nextMonth} className="px-3 py-1 rounded-lg text-sm hover:bg-surface-2 cursor-pointer">→</button>
+      </div>
+
+      {/* Lingkup tahun — arsip mencakup 2023-2026, jadi "semua tahun" default */}
+      <div className="flex justify-center mb-3">
+        <div className="inline-flex rounded-full bg-white border border-[var(--linkura-border)] overflow-hidden shadow-sm">
+          {([true, false] as const).map((mode) => (
+            <button
+              key={String(mode)}
+              onClick={() => setAllYears(mode)}
+              className={`px-3 py-1 text-[11px] font-bold transition cursor-pointer ${
+                allYears === mode ? "text-white" : "text-slate-500"
+              }`}
+              style={allYears === mode ? { background: "linear-gradient(90deg,#8d8df2,#a89bf5)" } : undefined}
+            >
+              {mode ? tr("すべての年", "Semua tahun") : tr(`${viewYear}年のみ`, `${viewYear} saja`)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Legenda + filter jenis (klik untuk sembunyikan/tampilkan) */}
+      <div className="flex flex-wrap justify-center gap-1.5 mb-3">
+        {(
+          [
+            { k: "episode", c: "#8b82f5", jp: "活動記録", id: "Cerita" },
+            { k: "sukukone", c: "#ef5a8f", jp: "With×MEETS", id: "With×MEETS" },
+            { k: "birthday", c: "#ffb74d", jp: "誕生日", id: "Ultah member" },
+            { k: "seiyuu", c: "#7bb8f0", jp: "声優誕生日", id: "Ultah seiyuu" },
+            { k: "unit", c: "#c9a5ff", jp: "結成記念", id: "Hari jadi unit" },
+            { k: "milestone", c: "#8b8b8b", jp: "節目", id: "Tonggak" },
+          ] as const
+        ).map((t) => {
+          const off = hidden.has(t.k);
+          return (
+            <button
+              key={t.k}
+              onClick={() =>
+                setHidden((prev) => {
+                  const next = new Set(prev);
+                  if (next.has(t.k)) next.delete(t.k);
+                  else next.add(t.k);
+                  return next;
+                })
+              }
+              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold transition cursor-pointer ${
+                off
+                  ? "border-[var(--linkura-border)] bg-white text-text-dim/50 line-through"
+                  : "border-transparent bg-white text-slate-600 shadow-sm"
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: off ? "#ccc" : t.c }} />
+              {tr(t.jp, t.id)}
+            </button>
+          );
+        })}
       </div>
 
       {/* Day headers */}
@@ -286,7 +492,11 @@ export default function CalendarPage() {
       ) : (
         <div className="space-y-1.5">
           {monthEvents
-            .sort((a, b) => parseInt(a.monthDay.split("-")[1]) - parseInt(b.monthDay.split("-")[1]))
+            .sort(
+              (a, b) =>
+                parseInt(a.monthDay.split("-")[1]) - parseInt(b.monthDay.split("-")[1]) ||
+                a.year - b.year
+            )
             .map((e, i) => (
               <Link
                 key={i}
@@ -297,7 +507,12 @@ export default function CalendarPage() {
                 <span className="text-text-dim w-10 shrink-0">
                   {e.monthDay.split("-")[1]}日
                 </span>
-                <span className="flex-1 truncate">{e.title}</span>
+                <span className="flex-1 truncate">
+                  {allYears && e.year > 0 && (
+                    <span className="text-text-dim/70 mr-1.5">{e.year}</span>
+                  )}
+                  {e.titleId && tr("", "id") === "id" ? e.titleId : e.title}
+                </span>
                 <span className="text-[10px] text-text-dim/60">
                   {e.type === "episode" ? "活動記録" : e.type === "sukukone" ? "スクコネ" : "🎂"}
                 </span>
