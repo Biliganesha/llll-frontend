@@ -6,6 +6,7 @@ import { BottomNav } from "@/components/ui/BottomNav";
 import { MenuOverlay } from "@/components/ui/MenuOverlay";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/language";
+import { ArchiveStats } from "@/components/ui/ArchiveStats";
 import { translate } from "@/lib/translations";
 import {
   ABOUT_SECTIONS,
@@ -36,6 +37,9 @@ export default function AboutPage() {
         </p>
       </div>
 
+      {/* Angka pelestarian — dihitung live, bukan trafik pengunjung */}
+      <ArchiveStats />
+
       {/* Text sections */}
       {ABOUT_SECTIONS.map((section) => (
         <div key={section.id} className="rounded-xl border border-border overflow-hidden">
@@ -49,6 +53,14 @@ export default function AboutPage() {
           </div>
         </div>
       ))}
+
+      {/* Transparansi: statistik kunjungan anonim */}
+      <p className="text-[11px] text-text-dim leading-relaxed px-1">
+        {t(
+          "このサイトは、どのページが読まれているかを知るために匿名のアクセス統計のみを記録しています（Cookieなし・個人を特定する情報は収集しません）。広告・寄付・収益化は一切ありません。",
+          "Situs ini hanya mencatat statistik kunjungan anonim untuk mengetahui halaman mana yang dibaca (tanpa cookie, tanpa data yang mengidentifikasi pribadi). Tidak ada iklan, donasi, maupun monetisasi dalam bentuk apa pun."
+        )}
+      </p>
 
       {/* Official links */}
       <div className="rounded-xl border border-border overflow-hidden">
